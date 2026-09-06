@@ -1,0 +1,103 @@
+import { lazy, Suspense } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
+import { PublicLayout } from './layouts/PublicLayout';
+import { GuestRoute, ProtectedRoute } from './components/ProtectedRoute';
+import { Spinner } from './components/ui/Spinner';
+
+const HomePage = lazy(() => import('./pages/HomePage'));
+const TrainingsPage = lazy(() => import('./pages/TrainingsPage'));
+const TrainingDetailPage = lazy(() => import('./pages/TrainingDetailPage'));
+const ResourcesPage = lazy(() => import('./pages/ResourcesPage'));
+const ResourceDetailPage = lazy(() => import('./pages/ResourceDetailPage'));
+const AuthorPage = lazy(() => import('./pages/AuthorPage'));
+const PromptsPage = lazy(() => import('./pages/PromptsPage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
+const AuthPage = lazy(() => import('./pages/AuthPage'));
+const CartPage = lazy(() => import('./pages/CartPage'));
+const OrdersPage = lazy(() => import('./pages/OrdersPage'));
+const QuizPage = lazy(() => import('./pages/QuizPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+
+const TeacherPanelPage = lazy(() => import('./pages/TeacherPanelPage'));
+const MyTrainingsTab = lazy(() => import('./components/workspace/teacher/MyTrainingsTab'));
+const MyResourcesTab = lazy(() => import('./components/workspace/teacher/MyResourcesTab'));
+const UploadTab = lazy(() => import('./components/workspace/teacher/UploadTab'));
+const QuizBuilderTab = lazy(() => import('./components/workspace/teacher/QuizBuilderTab'));
+const MyCertificatesTab = lazy(
+  () => import('./components/workspace/teacher/MyCertificatesTab'),
+);
+const EarningsTab = lazy(() => import('./components/workspace/teacher/EarningsTab'));
+
+const AdminPanelPage = lazy(() => import('./pages/AdminPanelPage'));
+const ModerationTab = lazy(() => import('./components/workspace/admin/ModerationTab'));
+const AdminTrainingsTab = lazy(
+  () => import('./components/workspace/admin/AdminTrainingsTab'),
+);
+const UsersTab = lazy(() => import('./components/workspace/admin/UsersTab'));
+const SalesTab = lazy(() => import('./components/workspace/admin/SalesTab'));
+const AdminCertificatesTab = lazy(
+  () => import('./components/workspace/admin/AdminCertificatesTab'),
+);
+
+export default function App() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <Routes>
+        {/* Publik səhifələr */}
+        <Route element={<PublicLayout />}>
+          <Route index element={<HomePage />} />
+          <Route path="telimler" element={<TrainingsPage />} />
+          <Route path="telimler/:id" element={<TrainingDetailPage />} />
+          <Route path="resurslar" element={<ResourcesPage />} />
+          <Route path="resurslar/:id" element={<ResourceDetailPage />} />
+          <Route path="muellif/:id" element={<AuthorPage />} />
+          <Route path="promptlar" element={<PromptsPage />} />
+          <Route path="haqqimizda" element={<AboutPage />} />
+          <Route path="blog/:id" element={<BlogPostPage />} />
+
+          {/* Yalnız qonaq */}
+          <Route element={<GuestRoute />}>
+            <Route path="giris" element={<AuthPage />} />
+          </Route>
+
+          {/* Yalnız login */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="sebet" element={<CartPage />} />
+            <Route path="sifarisler" element={<OrdersPage />} />
+          </Route>
+          <Route element={<ProtectedRoute message="İmtahan üçün hesaba daxil olun" />}>
+            <Route path="imtahan/:resourceId" element={<QuizPage />} />
+          </Route>
+
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
+
+        {/* Müəllim paneli */}
+        <Route element={<ProtectedRoute role="Teacher" />}>
+          <Route path="panel" element={<TeacherPanelPage />}>
+            <Route index element={<Navigate to="telimlerim" replace />} />
+            <Route path="telimlerim" element={<MyTrainingsTab />} />
+            <Route path="resurslarim" element={<MyResourcesTab />} />
+            <Route path="yukle" element={<UploadTab />} />
+            <Route path="imtahanlar" element={<QuizBuilderTab />} />
+            <Route path="sertifikatlarim" element={<MyCertificatesTab />} />
+            <Route path="qazanc" element={<EarningsTab />} />
+          </Route>
+        </Route>
+
+        {/* Admin paneli */}
+        <Route element={<ProtectedRoute role="Admin" />}>
+          <Route path="admin" element={<AdminPanelPage />}>
+            <Route index element={<Navigate to="moderasiya" replace />} />
+            <Route path="moderasiya" element={<ModerationTab />} />
+            <Route path="telimler" element={<AdminTrainingsTab />} />
+            <Route path="istifadeciler" element={<UsersTab />} />
+            <Route path="satis" element={<SalesTab />} />
+            <Route path="sertifikatlar" element={<AdminCertificatesTab />} />
+          </Route>
+        </Route>
+      </Routes>
+    </Suspense>
+  );
+}
