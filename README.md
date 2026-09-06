@@ -49,9 +49,32 @@ repoda hazırdır:
 
 | Platforma | Fayl | Qeyd |
 |---|---|---|
+| **Cloudflare Workers** | `wrangler.jsonc` | Aşağıya bax — `npm run deploy` |
 | Vercel | `vercel.json` | Repo-nu import edin, əlavə tənzimləmə lazım deyil |
 | Netlify | `netlify.toml` + `public/_redirects` | Build command: `npm run build`, publish: `dist` |
 | Render (Static Site) | `render.yaml` | Backend ilə eyni hesabda, "New → Static Site" |
+
+### Cloudflare Workers (seçilmiş platforma)
+
+`wrangler.jsonc` bir "assets-only" Worker konfiqurasiyasıdır — worker skripti yoxdur,
+sadəcə `dist/`-i Cloudflare-in kənar şəbəkəsindən statik verir və
+`not_found_handling: "single-page-application"` sayəsində bütün yollar `index.html`-ə
+düşür (React Router üçün lazımdır). `wrangler --dry-run` ilə konfiqurasiya artıq
+doğrulanıb.
+
+```bash
+npm install                # wrangler devDependency kimi artıq əlavə olunub
+npx wrangler login         # bir dəfə, brauzerdə Cloudflare hesabına giriş
+npm run deploy             # build + wrangler deploy
+```
+
+CI/CD üçün (brauzer login-siz): `CLOUDFLARE_API_TOKEN` mühit dəyişənini təyin edib
+birbaşa `npm run deploy` işlədin — token "Edit Cloudflare Workers" icazəsi ilə
+Cloudflare dashboard → My Profile → API Tokens-dan yaradılır.
+
+İlk deploy-dan sonra Worker `https://mimeduazweb.<hesab-subdomain>.workers.dev`
+ünvanında olacaq — bu domeni backend-in `Cors:AllowedOrigins` siyahısına əlavə etmək
+lazımdır (hazırda yalnız `https://mimedu.az` var).
 
 Backend-in `Cors:AllowedOrigins` siyahısında (`appsettings.json`) frontend-in yayımlanan
 domeni əlavə olunmalıdır — hazırda yalnız `https://mimedu.az` var (§ Program.cs).
