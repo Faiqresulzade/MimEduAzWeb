@@ -51,7 +51,7 @@ repoda hazırdır:
 |---|---|---|
 | **Cloudflare Workers** | `wrangler.jsonc` | Aşağıya bax — `npm run deploy` |
 | Vercel | `vercel.json` | Repo-nu import edin, əlavə tənzimləmə lazım deyil |
-| Netlify | `netlify.toml` + `public/_redirects` | Build command: `npm run build`, publish: `dist` |
+| Netlify | `netlify.toml` | Build command: `npm run build`, publish: `dist` |
 | Render (Static Site) | `render.yaml` | Backend ilə eyni hesabda, "New → Static Site" |
 
 ### Cloudflare Workers (seçilmiş platforma)
