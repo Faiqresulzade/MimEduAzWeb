@@ -34,6 +34,34 @@ birbaşa origin-dən verilir — `fileUrl()` funksiyası bunu nəzərə alır.
 
 Test sertifikat kodu: `MIM-2026-4417`.
 
+## Production
+
+`npm run build` `mode: production` ilə işlədikdə Vite `.env.production`-u avtomatik
+oxuyur — bu fayl artıq repoda var və `VITE_API_ORIGIN=https://mimeduazback.onrender.com`
+göstərir. Yəni sadəcə build alıb `dist/`-i statik host-a yükləmək kifayətdir, əlavə
+mühit dəyişəni təyin etməyə ehtiyac yoxdur (istəsəniz host panelindən override edə
+bilərsiniz).
+
+React Router `BrowserRouter` istifadə etdiyi üçün host tərəfdə **bütün yolları
+`index.html`-ə yönləndirən SPA rewrite qaydası** olmalıdır, yoxsa `/telimler` kimi
+birbaşa ünvanlar 404 verər. Üç ən çox yayılmış platforma üçün konfiqurasiya artıq
+repoda hazırdır:
+
+| Platforma | Fayl | Qeyd |
+|---|---|---|
+| Vercel | `vercel.json` | Repo-nu import edin, əlavə tənzimləmə lazım deyil |
+| Netlify | `netlify.toml` + `public/_redirects` | Build command: `npm run build`, publish: `dist` |
+| Render (Static Site) | `render.yaml` | Backend ilə eyni hesabda, "New → Static Site" |
+
+Backend-in `Cors:AllowedOrigins` siyahısında (`appsettings.json`) frontend-in yayımlanan
+domeni əlavə olunmalıdır — hazırda yalnız `https://mimedu.az` var (§ Program.cs).
+
+**⚠️ Bilinən blokerdir:** yazı tarixinə (2026-09-06) `mimeduazback.onrender.com`
+üzərindəki bütün data endpoint-ləri (`/resources`, `/trainings`, `/blog` və s.) `500`
+qaytarır (Swagger UI-nin özü açılsa da). Bu backend tərəfli problemdir — DB migration/seed
+Render-də icra olunmayıb, ya da connection string səhvdir. Frontend production build-i
+hazırdır, amma backend düzələnə qədər deploy edilən sayt boş/xətalı görünəcək.
+
 ## Struktur
 
 ```
