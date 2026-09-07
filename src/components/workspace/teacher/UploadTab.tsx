@@ -14,9 +14,12 @@ import {
   SUBJECTS,
 } from '../../../lib/constants';
 import type { ResourceType } from '../../../types';
+import { useAuth } from '../../../hooks/useAuth';
+import { BecomeAuthorPrompt } from './BecomeAuthorPrompt';
 
 export default function UploadTab() {
   const { toast } = useToast();
+  const { canPublishResources } = useAuth();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState('');
@@ -80,6 +83,9 @@ export default function UploadTab() {
       setSubmitting(false);
     }
   }
+
+  // Şagird hesabı `POST /resources`-dan 403 alır — forma əvəzinə təklif göstərilir.
+  if (!canPublishResources) return <BecomeAuthorPrompt />;
 
   return (
     <section>

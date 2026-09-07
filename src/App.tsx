@@ -7,6 +7,7 @@ import { Spinner } from './components/ui/Spinner';
 const HomePage = lazy(() => import('./pages/HomePage'));
 const TrainingsPage = lazy(() => import('./pages/TrainingsPage'));
 const TrainingDetailPage = lazy(() => import('./pages/TrainingDetailPage'));
+const TrainingLessonsPage = lazy(() => import('./pages/TrainingLessonsPage'));
 const ResourcesPage = lazy(() => import('./pages/ResourcesPage'));
 const ResourceDetailPage = lazy(() => import('./pages/ResourceDetailPage'));
 const AuthorPage = lazy(() => import('./pages/AuthorPage'));
@@ -68,6 +69,10 @@ export default function App() {
           </Route>
           <Route element={<ProtectedRoute message="İmtahan üçün hesaba daxil olun" />}>
             <Route path="imtahan/:resourceId" element={<QuizPage />} />
+          </Route>
+          {/* Dərslər yalnız təlimə yazılanlara açıqdır — backend 403 qaytarır. */}
+          <Route element={<ProtectedRoute message="Dərslər üçün hesaba daxil olun" />}>
+            <Route path="telimler/:id/dersler" element={<TrainingLessonsPage />} />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />

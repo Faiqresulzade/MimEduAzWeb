@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { trainingsApi } from '../api';
 import { apiErrorMessage } from '../hooks/useApiError';
 import { useAddToCart } from '../hooks/useAddToCart';
@@ -12,6 +12,7 @@ import type { TrainingDetail } from '../types';
 
 export default function TrainingDetailPage() {
   const { id = '' } = useParams();
+  const navigate = useNavigate();
   const [training, setTraining] = useState<TrainingDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -94,6 +95,12 @@ export default function TrainingDetailPage() {
               <dd className="font-medium text-brand-ink">{training.durationHours} saat</dd>
             </div>
             <div className="flex justify-between gap-3">
+              <dt className="text-brand-muted">Dərs sayı</dt>
+              <dd className="font-medium text-brand-ink">
+                {training.lessonCount} dərs
+              </dd>
+            </div>
+            <div className="flex justify-between gap-3">
               <dt className="text-brand-muted">Yer sayı</dt>
               <dd className="font-medium text-brand-ink">
                 {training.seatLimit === null
@@ -103,18 +110,34 @@ export default function TrainingDetailPage() {
             </div>
           </dl>
 
-          <Button
-            className="mt-6"
-            fullWidth
-            disabled={pendingId === training.id || soldOut}
-            onClick={() => add('Training', training.id)}
-          >
-            {soldOut ? 'Yer qalmayıb' : 'Səbətə əlavə et'}
-          </Button>
-
-          <p className="mt-3 text-xs leading-relaxed text-brand-faint">
-            Ödəniş demo rejimdədir — kart məlumatı saxlanılmır.
-          </p>
+          {training.isEnrolled ? (
+            <>
+              <Button
+                className="mt-6"
+                fullWidth
+                onClick={() => navigate(`/telimler/${training.id}/dersler`)}
+              >
+                Dərslərə keç
+              </Button>
+              <p className="mt-3 text-xs leading-relaxed text-brand-faint">
+                Bu təlimə yazılmısınız — bütün dərslər açıqdır.
+              </p>
+            </>
+          ) : (
+            <>
+              <Button
+                className="mt-6"
+                fullWidth
+                disabled={pendingId === training.id || soldOut}
+                onClick={() => add('Training', training.id)}
+              >
+                {soldOut ? 'Yer qalmayıb' : 'Səbətə əlavə et'}
+              </Button>
+              <p className="mt-3 text-xs leading-relaxed text-brand-faint">
+                Ödəniş demo rejimdədir — kart məlumatı saxlanılmır.
+              </p>
+            </>
+          )}
         </aside>
       </div>
     </div>

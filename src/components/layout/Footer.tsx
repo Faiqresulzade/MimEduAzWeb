@@ -56,7 +56,7 @@ export function Footer() {
           <ul className="mt-4 space-y-2.5 text-sm">
             <li>
               <Link
-                to="/giris?mode=register"
+                to="/giris?mode=register&type=teacher"
                 className="text-brand-slate hover:text-brand-blue"
               >
                 Müəllif hesabı aç

@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { trainingsApi } from '../../../api';
 import { apiErrorMessage } from '../../../hooks/useApiError';
 import { useAddToCart } from '../../../hooks/useAddToCart';
-import { useToast } from '../../../hooks/useToast';
 import { FormatBadge, StatusBadge } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
 import { ErrorNote } from '../../ui/ErrorNote';
@@ -17,7 +16,6 @@ export default function MyTrainingsTab() {
   const [enrollments, setEnrollments] = useState<MyTraining[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast();
   const { add, pendingId } = useAddToCart();
 
   useEffect(() => {
@@ -78,7 +76,10 @@ export default function MyTrainingsTab() {
               {enrollment ? (
                 <div className="mt-5">
                   <div className="flex items-center justify-between gap-3 text-sm">
-                    <span className="text-brand-muted">Gedişat</span>
+                    <span className="text-brand-muted">
+                      {enrollment.completedLessonCount} / {enrollment.totalLessonCount}{' '}
+                      dərs
+                    </span>
                     <span className="font-heading font-semibold text-brand-navy">
                       {enrollment.progressPercent}%
                     </span>
@@ -87,19 +88,21 @@ export default function MyTrainingsTab() {
                     <ProgressBar value={enrollment.progressPercent} />
                   </div>
 
-                  <div className="mt-4">
-                    {enrollment.status === 'Completed' ? (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <Link to={`/telimler/${training.id}/dersler`}>
+                      <Button
+                        size="sm"
+                        variant={enrollment.status === 'Completed' ? 'secondary' : 'primary'}
+                      >
+                        {enrollment.status === 'Completed'
+                          ? 'Dərsləri təkrar bax'
+                          : 'Davam et'}
+                      </Button>
+                    </Link>
+                    {enrollment.status === 'Completed' && (
                       <Link to="/panel/sertifikatlarim">
                         <Button size="sm">Sertifikatı gör</Button>
                       </Link>
-                    ) : (
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => toast('Dərs açılır, demoda məzmun yoxdur')}
-                      >
-                        Davam et
-                      </Button>
                     )}
                   </div>
                 </div>

@@ -5,7 +5,8 @@ export type ResourceType = 'WorkSheet' | 'Presentation' | 'Test' | 'MethodGuide'
 export type ResourceStatus = 'Pending' | 'Approved' | 'Rejected';
 export type TrainingFormat = 'Live' | 'Online' | 'Video';
 export type ItemType = 'Resource' | 'Training';
-export type UserRole = 'Teacher' | 'Admin';
+export type UserRole = 'Student' | 'Teacher' | 'Admin';
+export type AccountType = 'Student' | 'Teacher';
 export type EnrollmentStatus = 'InProgress' | 'Completed';
 
 /* ---------- Auth ---------- */
@@ -16,6 +17,8 @@ export interface User {
   email: string;
   subject: string | null;
   roles: UserRole[];
+  /** Yalnız Teacher/Admin resurs yükləyə bilir — şagird `POST /resources`-dan 403 alır. */
+  canPublishResources: boolean;
   createdAt: string;
 }
 
@@ -35,6 +38,12 @@ export interface RegisterRequest {
   fullName: string;
   email: string;
   password: string;
+  subject?: string;
+  /** Göndərilməsə backend `Student` yaradır. */
+  accountType?: AccountType;
+}
+
+export interface BecomeAuthorRequest {
   subject?: string;
 }
 
@@ -112,6 +121,7 @@ export interface Training {
   seatLimit: number | null;
   seatsTaken: number;
   seatsLeft: number | null;
+  lessonCount: number;
   createdAt: string;
 }
 
@@ -123,6 +133,8 @@ export interface SyllabusItem {
 
 export interface TrainingDetail extends Training {
   syllabus: SyllabusItem[];
+  /** Yalnız token göndərilibsə mənalıdır — anonim sorğuda həmişə false. */
+  isEnrolled: boolean;
 }
 
 export interface CreateTrainingRequest {
@@ -134,6 +146,7 @@ export interface CreateTrainingRequest {
   metaLabel: string;
   seatLimit: number | null;
   syllabus: string[];
+  lessons?: LessonInput[];
 }
 
 export interface MyTraining {
@@ -147,6 +160,58 @@ export interface MyTraining {
   status: EnrollmentStatus;
   enrolledAt: string;
   certificateCode: string | null;
+  completedLessonCount: number;
+  totalLessonCount: number;
+  completedAt: string | null;
+}
+
+/* ---------- Training lessons ---------- */
+
+export interface TrainingLesson {
+  id: string;
+  orderIndex: number;
+  title: string;
+  description: string;
+  /** Yalnız təlimə yazılmış istifadəçiyə qaytarılır. */
+  videoUrl: string | null;
+  durationMinutes: number | null;
+  isCompleted: boolean;
+  completedAt: string | null;
+}
+
+export interface TrainingLessons {
+  trainingId: string;
+  trainingName: string;
+  lessons: TrainingLesson[];
+  completedLessonCount: number;
+  totalLessonCount: number;
+  progressPercent: number;
+  status: EnrollmentStatus;
+  certificateCode: string | null;
+}
+
+export interface LessonProgress {
+  trainingId: string;
+  lessonId: string;
+  isCompleted: boolean;
+  completedLessonCount: number;
+  totalLessonCount: number;
+  progressPercent: number;
+  status: EnrollmentStatus;
+  /** Yalnız 100%-ə çatanda dolur. */
+  certificateCode: string | null;
+}
+
+export interface LessonInput {
+  title: string;
+  description: string;
+  videoUrl?: string;
+  durationMinutes?: number;
+}
+
+export interface SaveLessonsRequest {
+  mode: 'append' | 'replace';
+  lessons: LessonInput[];
 }
 
 /* ---------- Cart & orders ---------- */

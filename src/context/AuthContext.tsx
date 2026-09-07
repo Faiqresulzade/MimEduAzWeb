@@ -13,18 +13,21 @@ import {
   setSessionExpiredHandler,
   setTokens,
 } from '../api';
-import type { LoginRequest, RegisterRequest, User } from '../types';
+import type { BecomeAuthorRequest, LoginRequest, RegisterRequest, User } from '../types';
 
 export interface AuthContextValue {
   user: User | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
   isTeacher: boolean;
+  /** Resurs yükləmə icazəsi — backend-in `canPublishResources` sahəsindən. */
+  canPublishResources: boolean;
   /** Rola görə panel ünvanı: Admin → /admin, digərləri → /panel */
   panelPath: string;
   loading: boolean;
   login: (payload: LoginRequest) => Promise<User>;
   register: (payload: RegisterRequest) => Promise<User>;
+  becomeAuthor: (payload?: BecomeAuthorRequest) => Promise<User>;
   logout: () => Promise<void>;
 }
 
@@ -86,6 +89,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return auth.user;
   }, []);
 
+  /**
+   * Şagirddən müəllifə keçid. Yeni rol köhnə access token-də olmadığı üçün
+   * dərhal refresh edilir (dəyişiklik sənədi §4) — əks halda `POST /resources`
+   * hələ də 403 qaytarır.
+   */
+  const becomeAuthor = useCallback(async (payload: BecomeAuthorRequest = {}) => {
+    await authApi.becomeAuthor(payload);
+
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) throw new Error('Sessiya tapılmadı. Yenidən daxil olun.');
+
+    const auth = await authApi.refresh(refreshToken);
+    setTokens(auth.accessToken, auth.refreshToken);
+    setUser(auth.user);
+    return auth.user;
+  }, []);
+
   const logout = useCallback(async () => {
     const refreshToken = getRefreshToken();
     if (refreshToken) {
@@ -106,13 +126,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated: Boolean(user),
       isAdmin,
       isTeacher: user?.roles?.includes('Teacher') ?? false,
+      canPublishResources: user?.canPublishResources ?? false,
       panelPath: isAdmin ? '/admin' : '/panel',
       loading,
       login,
       register,
+      becomeAuthor,
       logout,
     };
-  }, [user, loading, login, register, logout]);
+  }, [user, loading, login, register, becomeAuthor, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
