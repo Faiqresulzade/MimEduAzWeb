@@ -5,6 +5,6 @@ export { trainingsApi } from './trainings';
 export { cartApi } from './cart';
 export { ordersApi } from './orders';
 export { quizApi } from './quiz';
-export { certificatesApi } from './certificates';
+export { certificatesApi, certificateDocumentUrl } from './certificates';
 export { adminApi } from './admin';
 export { blogApi } from './blog';

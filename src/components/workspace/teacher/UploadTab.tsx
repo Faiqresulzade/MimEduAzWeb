@@ -8,12 +8,13 @@ import { Input } from '../../ui/Input';
 import { Select } from '../../ui/Select';
 import {
   ACCEPTED_UPLOAD_TYPES,
+  FILE_RESOURCE_TYPE_OPTIONS,
   GRADES,
+  LINK_RESOURCE_TYPE_OPTIONS,
   MAX_UPLOAD_MB,
-  RESOURCE_TYPE_OPTIONS,
   SUBJECTS,
 } from '../../../lib/constants';
-import type { ResourceType } from '../../../types';
+import type { FileResourceType, LinkResourceType, ResourceType } from '../../../types';
 import { useAuth } from '../../../hooks/useAuth';
 import { BecomeAuthorPrompt } from './BecomeAuthorPrompt';
 
@@ -29,8 +30,13 @@ export default function UploadTab() {
   const [isPaid, setIsPaid] = useState(false);
   const [price, setPrice] = useState(3);
   const [file, setFile] = useState<File | null>(null);
+  const [externalUrl, setExternalUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const isLinkType = type === 'Video' || type === 'ExternalLink';
+  // Link paylaşıla bildiyi üçün xarici link yalnız pulsuz ola bilər (backend 400).
+  const canBePaid = type !== 'ExternalLink';
 
   function reset() {
     setName('');
@@ -40,7 +46,14 @@ export default function UploadTab() {
     setIsPaid(false);
     setPrice(3);
     setFile(null);
+    setExternalUrl('');
     if (fileRef.current) fileRef.current.value = '';
+  }
+
+  function changeType(next: ResourceType) {
+    setType(next);
+    // ExternalLink ödənişli ola bilmir — keçid zamanı seçim təmizlənir.
+    if (next === 'ExternalLink') setIsPaid(false);
   }
 
   async function handleSubmit(event: FormEvent) {
@@ -51,16 +64,45 @@ export default function UploadTab() {
       setError('Resursun adı ən azı 5 simvol olsun.');
       return;
     }
+    if (isPaid && price <= 0) {
+      setError('Ödənişli resurs üçün qiymət yazın.');
+      return;
+    }
+
+    if (isLinkType) {
+      const url = externalUrl.trim();
+      if (!/^https?:\/\/.+/i.test(url)) {
+        setError('Tam link yazın — http:// və ya https:// ilə başlamalıdır.');
+        return;
+      }
+
+      setSubmitting(true);
+      try {
+        await resourcesApi.uploadLink({
+          name: name.trim(),
+          subject,
+          grade,
+          type: type as LinkResourceType,
+          externalUrl: url,
+          isPaid: canBePaid ? isPaid : false,
+          price: canBePaid && isPaid ? price : 0,
+        });
+        toast('Resurs moderasiyaya göndərildi.');
+        reset();
+      } catch (err) {
+        setError(apiErrorMessage(err, 'Göndərmə alınmadı.'));
+      } finally {
+        setSubmitting(false);
+      }
+      return;
+    }
+
     if (!file) {
       setError('Yüklənəcək faylı seçin.');
       return;
     }
     if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
       setError(`Fayl ölçüsü ${MAX_UPLOAD_MB} MB-dan çox ola bilməz.`);
-      return;
-    }
-    if (isPaid && price <= 0) {
-      setError('Ödənişli resurs üçün qiymət yazın.');
       return;
     }
 
@@ -70,7 +112,7 @@ export default function UploadTab() {
         name: name.trim(),
         subject,
         grade,
-        type,
+        type: type as FileResourceType,
         isPaid,
         price,
         file,
@@ -91,8 +133,8 @@ export default function UploadTab() {
     <section>
       <h2 className="font-heading text-xl font-bold text-brand-navy">Yüklə</h2>
       <p className="mt-1.5 text-sm text-brand-muted">
-        PDF, DOCX və ya PPTX formatında, maksimum {MAX_UPLOAD_MB} MB. Material
-        moderasiyadan sonra Resurs Bankına düşür.
+        Fayl (PDF, DOCX, PPTX — maksimum {MAX_UPLOAD_MB} MB) və ya video/xarici link
+        yükləyin. Material moderasiyadan sonra Resurs Bankına düşür.
       </p>
 
       <form onSubmit={handleSubmit} className="card mt-5 space-y-4">
@@ -136,47 +178,88 @@ export default function UploadTab() {
           name="type"
           label="Tip"
           value={type}
-          onChange={(event) => setType(event.target.value as ResourceType)}
+          onChange={(event) => changeType(event.target.value as ResourceType)}
         >
-          {RESOURCE_TYPE_OPTIONS.map((item) => (
-            <option key={item.value} value={item.value}>
-              {item.label}
-            </option>
-          ))}
+          <optgroup label="Fayl yüklənir">
+            {FILE_RESOURCE_TYPE_OPTIONS.map((item) => (
+              <option key={item.value} value={item.value}>
+                {item.label}
+              </option>
+            ))}
+          </optgroup>
+          <optgroup label="Link saxlanılır">
+            {LINK_RESOURCE_TYPE_OPTIONS.map((item) => (
+              <option key={item.value} value={item.value}>
+                {item.label}
+              </option>
+            ))}
+          </optgroup>
         </Select>
 
-        <div>
-          <span className="mb-1.5 block font-heading text-[13px] font-semibold text-brand-slate">
-            Fayl
-          </span>
-          <input
-            ref={fileRef}
-            type="file"
-            accept={ACCEPTED_UPLOAD_TYPES}
-            onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-            className="w-full rounded-xl border border-brand-border bg-white px-4 py-3 text-sm text-brand-ink file:mr-3 file:rounded-pill file:border-0 file:bg-brand-chipBg file:px-4 file:py-1.5 file:font-heading file:text-[13px] file:font-semibold file:text-brand-blue"
+        {isLinkType ? (
+          <Input
+            name="externalUrl"
+            type="url"
+            label={type === 'Video' ? 'Video linki' : 'Material linki'}
+            value={externalUrl}
+            onChange={(event) => setExternalUrl(event.target.value)}
+            placeholder={
+              type === 'Video'
+                ? 'https://www.youtube.com/watch?v=...'
+                : 'https://wordwall.net/...'
+            }
+            hint={
+              type === 'Video'
+                ? 'YouTube və ya Vimeo linki. Ödənişli olarsa link yalnız satın alanlara açılır.'
+                : 'Wordwall, Canva, Drive və s. Xarici link yalnız pulsuz ola bilər.'
+            }
           />
-          {file && (
-            <p className="mt-1.5 text-xs text-brand-faint">
-              {file.name} · {(file.size / 1024 / 1024).toFixed(1)} MB
-            </p>
-          )}
-        </div>
+        ) : (
+          <div>
+            <span className="mb-1.5 block font-heading text-[13px] font-semibold text-brand-slate">
+              Fayl
+            </span>
+            <input
+              ref={fileRef}
+              type="file"
+              accept={ACCEPTED_UPLOAD_TYPES}
+              onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+              className="w-full rounded-xl border border-brand-border bg-white px-4 py-3 text-sm text-brand-ink file:mr-3 file:rounded-pill file:border-0 file:bg-brand-chipBg file:px-4 file:py-1.5 file:font-heading file:text-[13px] file:font-semibold file:text-brand-blue"
+            />
+            {file && (
+              <p className="mt-1.5 text-xs text-brand-faint">
+                {file.name} · {(file.size / 1024 / 1024).toFixed(1)} MB
+              </p>
+            )}
+          </div>
+        )}
 
         <div className="rounded-xl bg-brand-chipBg p-4">
           <label className="flex items-center gap-3">
             <input
               type="checkbox"
               checked={isPaid}
+              disabled={!canBePaid}
               onChange={(event) => setIsPaid(event.target.checked)}
-              className="h-4 w-4 accent-brand-blue"
+              className="h-4 w-4 accent-brand-blue disabled:opacity-50"
             />
-            <span className="font-heading text-sm font-semibold text-brand-slate">
+            <span
+              className={`font-heading text-sm font-semibold ${
+                canBePaid ? 'text-brand-slate' : 'text-brand-faint'
+              }`}
+            >
               Ödənişli resurs
             </span>
           </label>
 
-          {isPaid && (
+          {!canBePaid && (
+            <p className="mt-2 text-xs leading-relaxed text-brand-faint">
+              Xarici link paylaşıldıqdan sonra ona nəzarət etmək mümkün olmadığı üçün
+              yalnız pulsuz ola bilər. Ödənişli satış üçün video dərs seçin.
+            </p>
+          )}
+
+          {isPaid && canBePaid && (
             <div className="mt-4">
               <Input
                 name="price"

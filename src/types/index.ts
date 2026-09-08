@@ -1,7 +1,18 @@
 // Bütün tiplər backend-in real cavablarına (API_FRONTEND.md) uyğun yazılıb.
 // Enum-lar JSON-da mətn kimi gəlir.
 
-export type ResourceType = 'WorkSheet' | 'Presentation' | 'Test' | 'MethodGuide';
+export type ResourceType =
+  | 'WorkSheet'
+  | 'Presentation'
+  | 'Test'
+  | 'MethodGuide'
+  | 'Video'
+  | 'ExternalLink';
+
+/** Fayl yüklənən tiplər — `POST /resources` (multipart). */
+export type FileResourceType = 'WorkSheet' | 'Presentation' | 'Test' | 'MethodGuide';
+/** Link saxlanan tiplər — `POST /resources/link` (JSON). */
+export type LinkResourceType = 'Video' | 'ExternalLink';
 export type ResourceStatus = 'Pending' | 'Approved' | 'Rejected';
 export type TrainingFormat = 'Live' | 'Online' | 'Video';
 export type ItemType = 'Resource' | 'Training';
@@ -62,6 +73,8 @@ export interface Resource {
   price: number;
   status: ResourceStatus;
   hasQuiz: boolean;
+  /** Video / ExternalLink olduqda true — fayl yox, link saxlanılır. */
+  isLinkBased: boolean;
   createdAt: string;
   approvedAt: string | null;
 }
@@ -71,6 +84,11 @@ export interface ResourceDetail extends Resource {
   rejectionReason: string | null;
   quizId: string | null;
   originalFileName: string | null;
+  /**
+   * Pulsuz video/linkdə dolu gəlir — dərhal embed edilə bilər.
+   * Ödənişli video satın alınmayıbsa `null` (link gizlədilir).
+   */
+  externalUrl: string | null;
 }
 
 export interface PagedResult<T> {
@@ -95,8 +113,20 @@ export interface ResourceQuery {
 export interface DownloadResult {
   resourceId: string;
   fileName: string;
+  /** Fayl yolu VƏ YA xarici link — `isExternal`-a görə fərqli emal olunur. */
   downloadUrl: string;
+  isExternal: boolean;
   downloads: number;
+}
+
+export interface UploadLinkRequest {
+  name: string;
+  subject: string;
+  grade: number;
+  type: LinkResourceType;
+  externalUrl: string;
+  isPaid?: boolean;
+  price?: number;
 }
 
 export interface AuthorProfile {

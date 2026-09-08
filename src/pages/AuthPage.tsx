@@ -8,6 +8,7 @@ import { Input } from '../components/ui/Input';
 import { PasswordInput } from '../components/ui/PasswordInput';
 import { ErrorNote } from '../components/ui/ErrorNote';
 import type { AccountType } from '../types';
+import { PASSWORD_MIN_LENGTH } from '../lib/constants';
 
 type Mode = 'login' | 'register';
 
@@ -59,12 +60,31 @@ export default function AuthPage() {
       setError('Ad və soyadınızı yazın.');
       return;
     }
-    if (!email.includes('@') || password.length < 4) {
-      setError('E-poçt düzgün olsun, şifrə ən azı 4 simvol.');
+    if (!email.includes('@')) {
+      setError('E-poçt düzgün deyil.');
       return;
     }
-    if (mode === 'register' && password !== confirmPassword) {
-      setError('Şifrələr eyni deyil.');
+
+    if (mode === 'register') {
+      // Backend Identity qaydaları ilə eyni (CHANGELOG §6) — serverə getmədən tutulur.
+      if (password.length < PASSWORD_MIN_LENGTH) {
+        setError(`Şifrə ən azı ${PASSWORD_MIN_LENGTH} simvol olmalıdır.`);
+        return;
+      }
+      if (!/[0-9]/.test(password)) {
+        setError('Şifrədə ən azı bir rəqəm olmalıdır.');
+        return;
+      }
+      if (!/[a-zəçğıöşü]/.test(password)) {
+        setError('Şifrədə ən azı bir kiçik hərf olmalıdır.');
+        return;
+      }
+      if (password !== confirmPassword) {
+        setError('Şifrələr eyni deyil.');
+        return;
+      }
+    } else if (password.length === 0) {
+      setError('Şifrəni yazın.');
       return;
     }
 
@@ -178,6 +198,11 @@ export default function AuthPage() {
               onChange={(event) => setPassword(event.target.value)}
               autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
               placeholder="••••••••"
+              hint={
+                mode === 'register'
+                  ? `Ən azı ${PASSWORD_MIN_LENGTH} simvol, bir rəqəm və bir kiçik hərf.`
+                  : undefined
+              }
             />
 
             {mode === 'register' && (

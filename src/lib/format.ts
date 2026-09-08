@@ -51,6 +51,8 @@ export const resourceTypeLabels: Record<ResourceType, string> = {
   Presentation: 'Təqdimat',
   Test: 'Test',
   MethodGuide: 'Metodik vəsait',
+  Video: 'Video dərs',
+  ExternalLink: 'Xarici link',
 };
 
 export const trainingFormatLabels: Record<TrainingFormat, string> = {

@@ -8,13 +8,16 @@ import type {
   ResourceDetail,
   ResourceQuery,
   SaveQuizRequest,
+  UploadLinkRequest,
 } from '../types';
+import type { FileResourceType } from '../types';
 
 export interface UploadResourceInput {
   name: string;
   subject: string;
   grade: number;
-  type: string;
+  /** Yalnız fayl tipləri — Video/ExternalLink `uploadLink()`-dən keçir. */
+  type: FileResourceType;
   isPaid: boolean;
   price: number;
   file: File;
@@ -59,6 +62,15 @@ export const resourcesApi = {
     form.append('file', input.file);
 
     const { data } = await api.post<ResourceDetail>('/resources', form);
+    return data;
+  },
+
+  /**
+   * Video / xarici link resursu — JSON-dur, multipart deyil.
+   * `ExternalLink` yalnız pulsuz ola bilər (backend 400 qaytarır).
+   */
+  async uploadLink(input: UploadLinkRequest) {
+    const { data } = await api.post<ResourceDetail>('/resources/link', input);
     return data;
   },
 

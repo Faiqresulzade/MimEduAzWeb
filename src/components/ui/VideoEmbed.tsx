@@ -31,7 +31,7 @@ function toEmbedUrl(url: string): string | null {
   }
 }
 
-export function LessonVideo({ url, title }: { url: string; title: string }) {
+export function VideoEmbed({ url, title }: { url: string; title: string }) {
   const embed = toEmbedUrl(url);
 
   if (!embed) {
@@ -42,7 +42,7 @@ export function LessonVideo({ url, title }: { url: string; title: string }) {
         rel="noopener noreferrer"
         className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand-blue hover:underline"
       >
-        Videonu yeni pəncərədə aç ↗
+        Linki yeni pəncərədə aç ↗
       </a>
     );
   }

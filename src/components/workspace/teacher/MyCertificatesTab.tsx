@@ -6,6 +6,7 @@ import { Button } from '../../ui/Button';
 import { EmptyState } from '../../ui/EmptyState';
 import { ErrorNote } from '../../ui/ErrorNote';
 import { Spinner } from '../../ui/Spinner';
+import { CertificateDownloadLinks } from '../../certificates/CertificateDownloadLinks';
 import { formatDate } from '../../../lib/format';
 import type { Certificate } from '../../../types';
 
@@ -63,13 +64,16 @@ export default function MyCertificatesTab() {
                       Verilib: {formatDate(certificate.issuedAt)}
                     </p>
                   </div>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => verify(certificate.code)}
-                  >
-                    Doğrula
-                  </Button>
+                  <div className="flex flex-wrap gap-2">
+                    <CertificateDownloadLinks code={certificate.code} />
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => verify(certificate.code)}
+                    >
+                      Doğrula
+                    </Button>
+                  </div>
                 </div>
               </li>
             ))}

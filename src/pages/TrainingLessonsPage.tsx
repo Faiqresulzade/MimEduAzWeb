@@ -8,7 +8,7 @@ import { ErrorNote } from '../components/ui/ErrorNote';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import { Spinner } from '../components/ui/Spinner';
 import { StatusBadge } from '../components/ui/Badge';
-import { LessonVideo } from '../components/trainings/LessonVideo';
+import { VideoEmbed } from '../components/ui/VideoEmbed';
 import { CertificateModal } from '../components/trainings/CertificateModal';
 import type { TrainingLessons } from '../types';
 
@@ -157,7 +157,7 @@ export default function TrainingLessonsPage() {
             </div>
 
             {lesson.videoUrl && (
-              <LessonVideo url={lesson.videoUrl} title={lesson.title} />
+              <VideoEmbed url={lesson.videoUrl} title={lesson.title} />
             )}
 
             <Button

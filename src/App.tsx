@@ -18,6 +18,7 @@ const AuthPage = lazy(() => import('./pages/AuthPage'));
 const CartPage = lazy(() => import('./pages/CartPage'));
 const OrdersPage = lazy(() => import('./pages/OrdersPage'));
 const QuizPage = lazy(() => import('./pages/QuizPage'));
+const CertificateVerifyPage = lazy(() => import('./pages/CertificateVerifyPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 const TeacherPanelPage = lazy(() => import('./pages/TeacherPanelPage'));
@@ -56,6 +57,8 @@ export default function App() {
           <Route path="promptlar" element={<PromptsPage />} />
           <Route path="haqqimizda" element={<AboutPage />} />
           <Route path="blog/:id" element={<BlogPostPage />} />
+          {/* Sertifikatdakı QR kodun hədəfi — publikdir. */}
+          <Route path="sertifikat-yoxla/:code" element={<CertificateVerifyPage />} />
 
           {/* Yalnız qonaq */}
           <Route element={<GuestRoute />}>

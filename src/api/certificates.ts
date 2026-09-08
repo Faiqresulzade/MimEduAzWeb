@@ -1,5 +1,14 @@
-import { api } from './client';
+import { api, API_BASE } from './client';
 import type { Certificate, CertificateVerifyResult } from '../types';
+
+/**
+ * Sertifikat sənədinin publik linki — token tələb etmir, ona görə birbaşa
+ * `<a href>` / `<img src>` kimi işlədilə bilər (cavab fayl axınıdır, JSON deyil).
+ */
+export function certificateDocumentUrl(code: string, format: 'png' | 'pdf' = 'png') {
+  const path = `${API_BASE}/certificates/${encodeURIComponent(code)}/download`;
+  return format === 'pdf' ? `${path}?format=pdf` : path;
+}
 
 export const certificatesApi = {
   async mine() {

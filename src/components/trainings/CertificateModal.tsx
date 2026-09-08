@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Button } from '../ui/Button';
+import { CertificateDownloadLinks } from '../certificates/CertificateDownloadLinks';
 
 /** Təlim 100% tamamlananda backend sertifikatı özü yaradır (dəyişiklik sənədi §2.3). */
 export function CertificateModal({
@@ -38,7 +39,11 @@ export function CertificateModal({
           {code}
         </p>
 
-        <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:justify-center">
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
+          <CertificateDownloadLinks code={code} />
+        </div>
+
+        <div className="mt-4 flex flex-col gap-2 border-t border-brand-borderLight pt-4 sm:flex-row sm:justify-center">
           <Link to="/panel/sertifikatlarim">
             <Button fullWidth>Sertifikatlarıma bax</Button>
           </Link>

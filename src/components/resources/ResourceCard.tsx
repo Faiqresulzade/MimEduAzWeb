@@ -54,7 +54,7 @@ export function ResourceCard({
       </Link>
 
       <p className="mt-3 flex-1 text-xs text-brand-faint">
-        {formatNumber(resource.downloads)} endirmə
+        {formatNumber(resource.downloads)} {resource.isLinkBased ? 'baxış' : 'endirmə'}
       </p>
 
       <div className="mt-5 border-t border-brand-borderLight pt-4">
@@ -64,7 +64,11 @@ export function ResourceCard({
           </Button>
         ) : (
           <Button size="sm" variant="secondary" fullWidth disabled={busy} onClick={onDownload}>
-            Pulsuz endir
+            {resource.type === 'Video'
+              ? 'Pulsuz izlə'
+              : resource.isLinkBased
+                ? 'Pulsuz aç'
+                : 'Pulsuz endir'}
           </Button>
         )}
       </div>

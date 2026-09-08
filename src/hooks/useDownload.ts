@@ -2,7 +2,10 @@ import { useCallback, useState } from 'react';
 import { ApiError, fileUrl, resourcesApi } from '../api';
 import { useToast } from './useToast';
 
-/** Pulsuz endirmə: sayğacı artırır və faylı yeni tabda açır. */
+/**
+ * Sayğacı artırır və resursu açır.
+ * Fayl resursu → endirmə linki; video/xarici link → yeni tabda açılır.
+ */
 export function useDownload() {
   const { toast } = useToast();
   const [pendingId, setPendingId] = useState<string | null>(null);
@@ -12,8 +15,15 @@ export function useDownload() {
       setPendingId(resourceId);
       try {
         const result = await resourcesApi.download(resourceId);
-        window.open(fileUrl(result.downloadUrl), '_blank', 'noopener,noreferrer');
-        toast('Endirmə başladı.');
+
+        if (result.isExternal) {
+          // Xarici link olduğu kimi açılır — API origin əlavə edilmir.
+          window.open(result.downloadUrl, '_blank', 'noopener,noreferrer');
+          toast('Link yeni tabda açıldı.');
+        } else {
+          window.open(fileUrl(result.downloadUrl), '_blank', 'noopener,noreferrer');
+          toast('Endirmə başladı.');
+        }
         return result;
       } catch (error) {
         if (error instanceof ApiError && error.status === 403) {

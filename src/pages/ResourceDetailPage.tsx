@@ -12,6 +12,7 @@ import { PriceBadge, StatusBadge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { ErrorNote } from '../components/ui/ErrorNote';
 import { Spinner } from '../components/ui/Spinner';
+import { VideoEmbed } from '../components/ui/VideoEmbed';
 import { formatNumber, resourceTypeLabel } from '../lib/format';
 import type { QuizMeta, ResourceDetail } from '../types';
 
@@ -104,9 +105,23 @@ export default function ResourceDetailPage() {
 
           <p className="mt-4 text-base leading-relaxed text-brand-ink">
             {resourceTypeLabel(resource.type)} formatında material. {resource.subject}{' '}
-            fənni, {resource.grade}-ci sinif kurikulumuna uyğun hazırlanıb. Dərsdə çap
-            edilmiş şəkildə və ya ekranda işlədilə bilər.
+            fənni, {resource.grade}-ci sinif kurikulumuna uyğun hazırlanıb.{' '}
+            {resource.isLinkBased
+              ? 'Materiala keçid link vasitəsilə açılır.'
+              : 'Dərsdə çap edilmiş şəkildə və ya ekranda işlədilə bilər.'}
           </p>
+
+          {/* Pulsuz video/linkdə `externalUrl` dolu gəlir — dərhal embed olunur.
+              Ödənişli video satın alınmayıbsa backend linki gizlədir (null). */}
+          {resource.externalUrl && (
+            <VideoEmbed url={resource.externalUrl} title={resource.name} />
+          )}
+
+          {resource.isLinkBased && resource.isPaid && !resource.externalUrl && (
+            <p className="mt-4 rounded-xl bg-brand-chipBg px-4 py-3 text-sm text-brand-slate">
+              Bu video dərsin linki satın aldıqdan sonra açılır.
+            </p>
+          )}
 
           {resource.status === 'Rejected' && resource.rejectionReason && (
             <p className="mt-4 rounded-xl bg-danger-bg px-4 py-3 text-sm text-danger-text">
@@ -134,7 +149,9 @@ export default function ResourceDetailPage() {
               </dd>
             </div>
             <div className="card p-4">
-              <dt className="text-[13px] text-brand-muted">Endirmə</dt>
+              <dt className="text-[13px] text-brand-muted">
+                {resource.isLinkBased ? 'Baxış' : 'Endirmə'}
+              </dt>
               <dd className="mt-1 font-heading font-semibold text-brand-navy">
                 {formatNumber(resource.downloads)}
               </dd>
@@ -194,7 +211,11 @@ export default function ResourceDetailPage() {
                   disabled={busy}
                   onClick={() => download(resourceId)}
                 >
-                  Pulsuz endir
+                  {resource.type === 'Video'
+                    ? 'Pulsuz izlə'
+                    : resource.isLinkBased
+                      ? 'Materialı aç'
+                      : 'Pulsuz endir'}
                 </Button>
               </>
             )}
