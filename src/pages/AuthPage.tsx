@@ -5,6 +5,7 @@ import { useToast } from '../hooks/useToast';
 import { apiErrorMessage } from '../hooks/useApiError';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
+import { PasswordInput } from '../components/ui/PasswordInput';
 import { ErrorNote } from '../components/ui/ErrorNote';
 import type { AccountType } from '../types';
 
@@ -38,12 +39,14 @@ export default function AuthPage() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [subject, setSubject] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   function switchAuth() {
     setMode((current) => (current === 'login' ? 'register' : 'login'));
+    setConfirmPassword('');
     setError(null);
   }
 
@@ -58,6 +61,10 @@ export default function AuthPage() {
     }
     if (!email.includes('@') || password.length < 4) {
       setError('E-poçt düzgün olsun, şifrə ən azı 4 simvol.');
+      return;
+    }
+    if (mode === 'register' && password !== confirmPassword) {
+      setError('Şifrələr eyni deyil.');
       return;
     }
 
@@ -164,15 +171,25 @@ export default function AuthPage() {
               placeholder="ad@mimedu.az"
             />
 
-            <Input
+            <PasswordInput
               name="password"
-              type="password"
               label="Şifrə"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
               placeholder="••••••••"
             />
+
+            {mode === 'register' && (
+              <PasswordInput
+                name="confirmPassword"
+                label="Şifrəni təsdiqlə"
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                autoComplete="new-password"
+                placeholder="••••••••"
+              />
+            )}
 
             <ErrorNote message={error} />
 
