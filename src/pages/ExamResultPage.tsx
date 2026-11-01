@@ -35,7 +35,7 @@ export default function ExamResultPage() {
 
   if (error || !result) {
     return (
-      <div className="shell py-14">
+      <div className="shell py-10 lg:py-14">
         <ErrorNote message={error ?? 'Nəticə tapılmadı.'} />
         <Link to="/sinaqlar" className="mt-4 inline-block text-sm font-semibold text-brand-blue">
           &larr; Bütün sınaqlar
@@ -48,7 +48,7 @@ export default function ExamResultPage() {
   let questionNumber = 0;
 
   return (
-    <div className="shell max-w-3xl py-10 sm:py-14">
+    <div className="page max-w-3xl">
       <Link
         to={`/sinaqlar/${result.examId}`}
         className="text-sm font-semibold text-brand-blue"

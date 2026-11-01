@@ -4,10 +4,10 @@ import { Button } from '../components/ui/Button';
 
 export default function AboutPage() {
   return (
-    <div className="shell py-10 sm:py-14">
+    <div className="page">
       <header className="max-w-2xl">
-        <h1 className="font-heading text-3xl font-bold text-brand-navy">Haqqımızda</h1>
-        <p className="mt-3 text-base leading-relaxed text-brand-ink">
+        <h1 className="hidden font-heading text-3xl font-bold text-brand-navy lg:block">Haqqımızda</h1>
+        <p className="text-base leading-relaxed text-brand-ink lg:mt-3">
           MIMEDU.AZ müəllimin öyrəndiyini materiala, materialı isə gəlirə çevirdiyi
           qapalı dövrədir. Beş addımın hamısı bir platformada baş verir.
         </p>
@@ -36,7 +36,7 @@ export default function AboutPage() {
         <h2 className="font-heading text-xl font-bold text-brand-navy">
           Komissiya şərtləri
         </h2>
-        <p className="mt-3 text-sm leading-relaxed text-brand-ink">
+        <p className="text-sm leading-relaxed text-brand-ink lg:mt-3">
           Ödənişli materialın satışından əldə olunan məbləğin <strong>80%-i müəllifə</strong>{' '}
           gedir, <strong>20%-i platforma komissiyasıdır</strong>. Aylıq abunə haqqı və
           yükləmə haqqı yoxdur — yalnız real satışdan komissiya tutulur.

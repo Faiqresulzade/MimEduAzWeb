@@ -35,7 +35,7 @@ export default function TrainingDetailPage() {
 
   if (error || !training) {
     return (
-      <div className="shell py-14">
+      <div className="shell py-10 lg:py-14">
         <ErrorNote message={error ?? 'Təlim tapılmadı.'} />
         <Link to="/telimler" className="mt-4 inline-block text-sm font-semibold text-brand-blue">
           ← Bütün təlimlər
@@ -47,7 +47,7 @@ export default function TrainingDetailPage() {
   const soldOut = training.seatsLeft !== null && training.seatsLeft <= 0;
 
   return (
-    <div className="shell py-10 sm:py-14">
+    <div className="page">
       <Link to="/telimler" className="text-sm font-semibold text-brand-blue">
         ← Bütün təlimlər
       </Link>
@@ -55,7 +55,7 @@ export default function TrainingDetailPage() {
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:items-start">
         <div>
           <FormatBadge format={training.format} />
-          <h1 className="mt-4 font-heading text-3xl font-bold leading-tight text-brand-navy">
+          <h1 className="mt-4 font-heading text-[26px] font-bold leading-8 text-brand-navy lg:text-3xl lg:leading-tight">
             {training.name}
           </h1>
           <p className="mt-4 text-base leading-relaxed text-brand-ink">

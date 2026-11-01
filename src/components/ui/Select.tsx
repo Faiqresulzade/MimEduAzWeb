@@ -21,7 +21,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
         <select
           ref={ref}
           id={selectId}
-          className={`w-full appearance-none rounded-xl border border-brand-border bg-white px-4 py-3 pr-10 text-sm text-brand-ink transition focus:border-brand-blue ${className}`}
+          className={`w-full appearance-none rounded-xl border border-brand-border bg-white px-4 py-3 pr-10 text-base text-brand-ink lg:text-sm transition focus:border-brand-blue ${className}`}
           {...rest}
         >
           {children}

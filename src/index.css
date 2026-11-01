@@ -15,6 +15,15 @@
     @apply font-heading text-brand-navy;
   }
 
+  /* iOS Safari 16px-dən kiçik sahəyə fokus olanda səhifəni böyüdür. */
+  input, select, textarea {
+    @apply text-base lg:text-sm;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
   *:focus-visible {
     @apply outline-none ring-2 ring-brand-blue ring-offset-2 ring-offset-brand-bg;
   }
@@ -40,4 +49,22 @@
   .status-badge {
     @apply inline-flex items-center rounded-pill px-3 py-[5px] text-[13px] font-semibold;
   }
+}
+
+@layer components {
+  /* Səhifə qabı: mobildə tətbiqin ekran boşluqları (16px), masaüstündə geniş. */
+  .page {
+    @apply mx-auto w-full max-w-shell px-4 py-4 sm:px-6 lg:py-14;
+  }
+}
+
+/* Mobil filtr pəncərəsi (CatalogFilters) */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }

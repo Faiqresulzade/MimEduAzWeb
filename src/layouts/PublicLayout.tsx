@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { Header } from '../components/layout/Header';
-import { Footer } from '../components/layout/Footer';
+import { AppShell } from './AppShell';
 import { scrollToHash } from '../hooks/useSectionLink';
 
 export function PublicLayout() {
@@ -16,12 +15,8 @@ export function PublicLayout() {
   }, [location.pathname, location.hash]);
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-      <main className="flex-1">
-        <Outlet />
-      </main>
-      <Footer />
-    </div>
+    <AppShell>
+      <Outlet />
+    </AppShell>
   );
 }

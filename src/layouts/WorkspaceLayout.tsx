@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Header } from '../components/layout/Header';
-import { Footer } from '../components/layout/Footer';
+import { AppShell } from './AppShell';
 import { TabBar, type WorkspaceTab } from '../components/workspace/TabBar';
 import { Avatar } from '../components/ui/Avatar';
 import { Button } from '../components/ui/Button';
@@ -38,52 +37,49 @@ export function WorkspaceLayout({
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-
-      <main className="flex-1">
-        <div className="shell py-8 sm:py-10">
-          <div className="card mb-6 flex flex-wrap items-center gap-4 p-5">
-            <Avatar name={user?.fullName} size="lg" />
-            <div className="min-w-0 flex-1">
-              <p className="font-heading text-[13px] font-bold uppercase tracking-[.08em] text-brand-faint">
-                {title}
-              </p>
-              <h1 className="truncate font-heading text-xl font-bold text-brand-navy">
-                {user?.fullName ?? '—'}
-              </h1>
-              <p className="truncate text-sm text-brand-muted">{user?.email}</p>
-              <p className="mt-0.5 text-[13px] font-semibold text-brand-blue">{roleLabel}</p>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              {crossLink && (
-                <Link to={crossLink.to}>
-                  <Button variant="secondary" size="sm">
-                    {crossLink.label}
-                  </Button>
-                </Link>
-              )}
-              <Link to="/sifarisler">
+    <AppShell>
+      <div className="page lg:py-10">
+        {/* Mobildə profil kartı və yan menyu yoxdur — tətbiqdəki kimi Profil tabı və panel menyusu. */}
+        <div className="card mb-6 hidden flex-wrap items-center gap-4 p-5 lg:flex">
+          <Avatar name={user?.fullName} size="lg" />
+          <div className="min-w-0 flex-1">
+            <p className="font-heading text-[13px] font-bold uppercase tracking-[.08em] text-brand-faint">
+              {title}
+            </p>
+            <h1 className="truncate font-heading text-xl font-bold text-brand-navy">
+              {user?.fullName ?? '—'}
+            </h1>
+            <p className="truncate text-sm text-brand-muted">{user?.email}</p>
+            <p className="mt-0.5 text-[13px] font-semibold text-brand-blue">{roleLabel}</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {crossLink && (
+              <Link to={crossLink.to}>
                 <Button variant="secondary" size="sm">
-                  Sifarişlərim
+                  {crossLink.label}
                 </Button>
               </Link>
-              <Button variant="danger" size="sm" onClick={handleLogout}>
-                Çıxış
+            )}
+            <Link to="/sifarisler">
+              <Button variant="secondary" size="sm">
+                Sifarişlərim
               </Button>
-            </div>
-          </div>
-
-          <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
-            <TabBar tabs={tabs} />
-            <div className="min-w-0">
-              <Outlet />
-            </div>
+            </Link>
+            <Button variant="danger" size="sm" onClick={handleLogout}>
+              Çıxış
+            </Button>
           </div>
         </div>
-      </main>
 
-      <Footer />
-    </div>
+        <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
+          <div className="hidden lg:contents">
+            <TabBar tabs={tabs} />
+          </div>
+          <div className="min-w-0">
+            <Outlet />
+          </div>
+        </div>
+      </div>
+    </AppShell>
   );
 }

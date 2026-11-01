@@ -24,7 +24,7 @@ export function ResourceCard({
   onDownload,
 }: ResourceCardProps) {
   return (
-    <article className="card card-hover flex flex-col">
+    <article className="card card-hover relative flex flex-col">
       <div className="flex flex-wrap items-center gap-2">
         <StatusBadge tone="neutral">{resourceTypeLabel(resource.type)}</StatusBadge>
         <PriceBadge isPaid={resource.isPaid} price={resource.price} />
@@ -36,29 +36,29 @@ export function ResourceCard({
         )}
       </div>
 
-      <h3 className="mt-4 font-heading text-base font-semibold leading-snug text-brand-navy">
-        <Link to={`/resurslar/${resource.id}`} className="hover:text-brand-blue">
+      <h3 className="mt-3 font-heading text-base font-semibold leading-snug text-brand-navy lg:mt-4">
+        <Link to={`/resurslar/${resource.id}`} className="hover:text-brand-blue after:absolute after:inset-0 after:rounded-2xl">
           {resource.name}
         </Link>
       </h3>
 
-      <p className="mt-2 text-sm text-brand-muted">
+      <p className="mt-2 text-[13px] text-brand-muted lg:text-sm">
         {resource.subject} · {resource.grade}-ci sinif
       </p>
 
       <Link
         to={`/muellif/${resource.authorId}`}
-        className="mt-4 flex items-center gap-2.5 text-sm text-brand-slate hover:text-brand-blue"
+        className="relative z-10 mt-1 flex min-h-[44px] items-center gap-2.5 self-start text-[13px] text-brand-slate hover:text-brand-blue lg:mt-4 lg:min-h-0 lg:text-sm"
       >
         <Avatar name={resource.authorName} size="sm" />
         <span className="truncate font-medium">{resource.authorName}</span>
       </Link>
 
-      <p className="mt-3 flex-1 text-xs text-brand-faint">
+      <p className="mt-1 flex-1 text-xs font-medium text-brand-faint lg:mt-3 lg:font-normal">
         {formatNumber(resource.downloads)} {resource.isLinkBased ? 'baxış' : 'endirmə'}
       </p>
 
-      <div className="mt-5 border-t border-brand-borderLight pt-4">
+      <div className="relative z-10 mt-3 border-t border-brand-borderLight pt-3 lg:mt-5 lg:pt-4">
         {/* canAccess: pulsuzdur, alınıb və ya sizinkidir — "Səbətə at" yalnız tərsində. */}
         {resource.canAccess ? (
           <Button size="sm" variant="secondary" fullWidth disabled={busy} onClick={onDownload}>

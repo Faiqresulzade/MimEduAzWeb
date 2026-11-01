@@ -1,18 +1,19 @@
 import { useState } from 'react';
 import { faqItems } from '../../data/static';
+import { Icon } from '../ui/Icon';
 
 export function FaqAccordion() {
   // Prototipdəki `faqOpen` state-i: bir dəfədə yalnız biri açıq qalır.
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section id="faq" className="scroll-mt-24 border-y border-brand-borderLight bg-brand-surface">
-      <div className="shell py-14 sm:py-16">
-        <h2 className="font-heading text-2xl font-bold text-brand-navy sm:text-3xl">
+    <section id="faq" className="scroll-mt-24 lg:border-y lg:border-brand-borderLight lg:bg-brand-surface">
+      <div className="shell py-4 lg:py-16">
+        <h2 className="font-heading text-[22px] font-bold text-brand-navy lg:text-3xl">
           Tez-tez verilən suallar
         </h2>
 
-        <div className="mt-8 divide-y divide-brand-borderLight rounded-2xl border border-brand-border">
+        <div className="mt-3 divide-y divide-brand-borderLight overflow-hidden rounded-2xl border border-brand-border bg-brand-surface lg:mt-8">
           {faqItems.map((item, index) => {
             const isOpen = openIndex === index;
             return (
@@ -22,19 +23,12 @@ export function FaqAccordion() {
                     type="button"
                     aria-expanded={isOpen}
                     onClick={() => setOpenIndex(isOpen ? null : index)}
-                    className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-brand-hoverBg"
+                    className="flex min-h-[56px] w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-brand-hoverBg"
                   >
-                    <span className="font-heading text-[15px] font-semibold text-brand-navy">
+                    <span className="font-heading text-sm font-semibold text-brand-navy lg:text-[15px]">
                       {item.question}
                     </span>
-                    <span
-                      aria-hidden
-                      className={`shrink-0 text-brand-blue transition-transform duration-200 ${
-                        isOpen ? 'rotate-45' : ''
-                      }`}
-                    >
-                      +
-                    </span>
+                    <Icon name={isOpen ? 'minus' : 'plus'} size={20} className="text-brand-blue" />
                   </button>
                 </h3>
                 {isOpen && (

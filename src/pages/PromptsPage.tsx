@@ -32,18 +32,18 @@ export default function PromptsPage() {
   }
 
   return (
-    <div className="shell py-10 sm:py-14">
+    <div className="page">
       <header className="max-w-2xl">
-        <h1 className="font-heading text-3xl font-bold text-brand-navy">
+        <h1 className="hidden font-heading text-3xl font-bold text-brand-navy lg:block">
           Prompt Kitabxanası
         </h1>
-        <p className="mt-3 text-sm leading-relaxed text-brand-muted">
+        <p className="text-sm leading-relaxed text-brand-muted lg:mt-3">
           Dərs planı, sual dəsti və valideyn rəyi üçün hazır promptlar. Mötərizədəki
           sahələri öz dərsinizə uyğun doldurun.
         </p>
       </header>
 
-      <div className="mt-8 grid gap-4 lg:grid-cols-3">
+      <div className="mt-4 lg:mt-8 grid gap-4 lg:grid-cols-3">
         {prompts.map((prompt) => (
           <article key={prompt.id} className="card flex flex-col">
             <h2 className="font-heading text-lg font-semibold text-brand-navy">

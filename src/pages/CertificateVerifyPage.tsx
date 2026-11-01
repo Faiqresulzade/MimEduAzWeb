@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useEffect, useState, type FormEvent } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { certificatesApi } from '../api';
 import { apiErrorMessage } from '../hooks/useApiError';
 import { CertificateDownloadLinks } from '../components/certificates/CertificateDownloadLinks';
+import { Button } from '../components/ui/Button';
 import { ErrorNote } from '../components/ui/ErrorNote';
+import { Input } from '../components/ui/Input';
 import { Spinner } from '../components/ui/Spinner';
 import { formatDate } from '../lib/format';
 import type { CertificateVerifyResult } from '../types';
@@ -15,10 +17,18 @@ import type { CertificateVerifyResult } from '../types';
 export default function CertificateVerifyPage() {
   const { code = '' } = useParams();
   const [result, setResult] = useState<CertificateVerifyResult | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(Boolean(code));
+  const [input, setInput] = useState(code);
+  const [syncedCode, setSyncedCode] = useState(code);
+  if (syncedCode !== code) {
+    setSyncedCode(code);
+    setInput(code);
+  }
+  const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!code) return;
     let cancelled = false;
     setLoading(true);
     setError(null);
@@ -34,21 +44,41 @@ export default function CertificateVerifyPage() {
     };
   }, [code]);
 
+  function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+    const trimmed = input.trim();
+    if (!trimmed) return;
+    navigate(`/sertifikat-yoxla/${encodeURIComponent(trimmed)}`, { replace: Boolean(code) });
+  }
+
   return (
-    <div className="shell py-12 sm:py-16">
+    <div className="page">
       <div className="mx-auto max-w-xl">
-        <h1 className="font-heading text-2xl font-bold text-brand-navy sm:text-3xl">
+        <h1 className="hidden font-heading text-2xl font-bold text-brand-navy sm:text-3xl lg:block">
           Sertifikat yoxlaması
         </h1>
-        <p className="mt-2 text-sm text-brand-muted">
-          Kod: <span className="font-heading font-semibold text-brand-ink">{code}</span>
+        <p className="text-[13px] text-brand-muted lg:mt-2 lg:text-sm">
+          Sertifikatın aşağı sağ küncündəki kodu daxil edin. Yoxlama üçün hesab lazım deyil.
         </p>
+
+        <form onSubmit={handleSubmit} className="mt-4 flex gap-2">
+          <div className="flex-1">
+            <Input
+              value={input}
+              onChange={(event) => setInput(event.target.value)}
+              placeholder="MIM-2026-0000"
+              aria-label="Sertifikat kodu"
+              autoCapitalize="characters"
+            />
+          </div>
+          <Button type="submit">Yoxla</Button>
+        </form>
 
         <div className="mt-6">
           {loading && <Spinner />}
-          {!loading && error && <ErrorNote message={error} />}
+          {code && !loading && error && <ErrorNote message={error} />}
 
-          {!loading && !error && result?.isValid && (
+          {code && !loading && !error && result?.isValid && (
             <div className="card">
               <p className="status-badge bg-free-bg text-free-text">Sertifikat etibarlıdır</p>
               <p className="mt-4 font-heading text-xl font-bold text-brand-navy">
@@ -69,7 +99,7 @@ export default function CertificateVerifyPage() {
             </div>
           )}
 
-          {!loading && !error && result && !result.isValid && (
+          {code && !loading && !error && result && !result.isValid && (
             <div className="card">
               <p className="status-badge bg-danger-bg text-danger-text">
                 Sertifikat tapılmadı
@@ -82,7 +112,7 @@ export default function CertificateVerifyPage() {
           )}
         </div>
 
-        <Link to="/" className="mt-6 inline-block text-sm font-semibold text-brand-blue">
+        <Link to="/" className="mt-6 hidden text-sm font-semibold text-brand-blue lg:inline-block">
           ← Ana səhifə
         </Link>
       </div>

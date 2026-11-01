@@ -59,7 +59,7 @@ export default function ResourceDetailPage() {
 
   if (error || !resource) {
     return (
-      <div className="shell py-14">
+      <div className="shell py-10 lg:py-14">
         <ErrorNote message={error ?? 'Resurs tapılmadı.'} />
         <Link to="/resurslar" className="mt-4 inline-block text-sm font-semibold text-brand-blue">
           &larr; Resurs Bankı
@@ -82,7 +82,7 @@ export default function ResourceDetailPage() {
   }
 
   return (
-    <div className="shell py-10 sm:py-14">
+    <div className="page">
       <Link to="/resurslar" className="text-sm font-semibold text-brand-blue">
         &larr; Resurs Bankı
       </Link>
@@ -99,7 +99,7 @@ export default function ResourceDetailPage() {
             )}
           </div>
 
-          <h1 className="mt-4 font-heading text-3xl font-bold leading-tight text-brand-navy">
+          <h1 className="mt-4 font-heading text-[26px] font-bold leading-8 text-brand-navy lg:text-3xl lg:leading-tight">
             {resource.name}
           </h1>
 

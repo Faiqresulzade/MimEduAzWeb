@@ -27,8 +27,8 @@ export default function TrainingsPage() {
   }, []);
 
   return (
-    <div className="shell py-10 sm:py-14">
-      <header className="max-w-2xl">
+    <div className="page">
+      <header className="hidden max-w-2xl lg:block">
         <h1 className="font-heading text-3xl font-bold text-brand-navy">Təlimlər</h1>
         <p className="mt-3 text-sm leading-relaxed text-brand-muted">
           Canlı, onlayn və video formatda təlimlər. Hər təlimin sonunda koda görə
@@ -36,7 +36,7 @@ export default function TrainingsPage() {
         </p>
       </header>
 
-      <div className="mt-8">
+      <div className="lg:mt-8">
         {loading ? (
           <Spinner />
         ) : error ? (

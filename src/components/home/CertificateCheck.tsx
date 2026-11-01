@@ -51,17 +51,17 @@ export function CertificateCheck() {
   }
 
   return (
-    <section id="sertifikat" className="shell scroll-mt-24 py-14 sm:py-16">
-      <div className="card p-6 sm:p-8">
-        <h2 className="font-heading text-2xl font-bold text-brand-navy sm:text-3xl">
+    <section id="sertifikat" className="shell scroll-mt-24 py-4 lg:py-16">
+      <div className="card p-5 lg:p-8">
+        <h2 className="font-heading text-[22px] font-bold text-brand-navy lg:text-3xl">
           Sertifikat yoxlama
         </h2>
-        <p className="mt-2 max-w-2xl text-sm text-brand-muted">
+        <p className="mt-3 max-w-2xl text-[13px] text-brand-muted lg:mt-2 lg:text-sm">
           Sertifikatın aşağı sağ küncündəki kodu daxil edin. Yoxlama üçün hesab lazım
           deyil — məktəb rəhbərliyi də istifadə edə bilər.
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-3 sm:flex-row">
+        <form onSubmit={handleSubmit} className="mt-4 flex gap-2 lg:mt-6 lg:gap-3">
           <div className="flex-1">
             <Input
               name="certInput"

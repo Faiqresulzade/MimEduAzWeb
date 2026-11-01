@@ -83,7 +83,7 @@ export default function TrainingLessonsPage() {
 
   if (error || !data) {
     return (
-      <div className="shell py-14">
+      <div className="shell py-10 lg:py-14">
         <ErrorNote message={error ?? 'Dərslər tapılmadı.'} />
         <Link
           to={`/telimler/${id}`}
@@ -96,7 +96,7 @@ export default function TrainingLessonsPage() {
   }
 
   return (
-    <div className="shell py-10 sm:py-14">
+    <div className="page">
       <Link to={`/telimler/${id}`} className="text-sm font-semibold text-brand-blue">
         ← {data.trainingName}
       </Link>

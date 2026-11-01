@@ -61,7 +61,7 @@ export default function ExamDetailPage() {
 
   if (error || !exam) {
     return (
-      <div className="shell py-14">
+      <div className="shell py-10 lg:py-14">
         <ErrorNote message={error ?? 'Sınaq tapılmadı.'} />
         <Link to="/sinaqlar" className="mt-4 inline-block text-sm font-semibold text-brand-blue">
           &larr; Bütün sınaqlar
@@ -73,7 +73,7 @@ export default function ExamDetailPage() {
   const attempt = exam.myAttempt;
 
   return (
-    <div className="shell py-10 sm:py-14">
+    <div className="page">
       <Link to="/sinaqlar" className="text-sm font-semibold text-brand-blue">
         &larr; Bütün sınaqlar
       </Link>
@@ -90,7 +90,7 @@ export default function ExamDetailPage() {
             )}
           </div>
 
-          <h1 className="mt-4 font-heading text-3xl font-bold leading-tight text-brand-navy">
+          <h1 className="mt-4 font-heading text-[26px] font-bold leading-8 text-brand-navy lg:text-3xl lg:leading-tight">
             {exam.name}
           </h1>
 

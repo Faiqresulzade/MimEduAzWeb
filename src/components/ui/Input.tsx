@@ -20,7 +20,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       <input
         ref={ref}
         id={inputId}
-        className={`w-full rounded-xl border border-brand-border bg-white px-4 py-3 text-sm text-brand-ink transition placeholder:text-brand-faint focus:border-brand-blue ${className}`}
+        className={`w-full rounded-xl border border-brand-border bg-white px-4 py-3 text-base text-brand-ink lg:text-sm transition placeholder:text-brand-faint focus:border-brand-blue ${className}`}
         {...rest}
       />
       {hint && <span className="mt-1.5 block text-xs text-brand-faint">{hint}</span>}

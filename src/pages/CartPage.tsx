@@ -46,11 +46,11 @@ export default function CartPage() {
   if (loading && items.length === 0) return <Spinner />;
 
   return (
-    <div className="shell py-10 sm:py-14">
-      <h1 className="font-heading text-3xl font-bold text-brand-navy">Səbət</h1>
+    <div className="page">
+      <h1 className="hidden font-heading text-3xl font-bold text-brand-navy lg:block">Səbət</h1>
 
       {items.length === 0 ? (
-        <div className="mt-8">
+        <div className="lg:mt-8">
           <EmptyState
             title="Səbətiniz boşdur"
             text="Təlim və ya ödənişli resurs əlavə edib ödənişə keçə bilərsiniz."
@@ -69,7 +69,7 @@ export default function CartPage() {
           />
         </div>
       ) : (
-        <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-start">
+        <div className="grid gap-4 lg:mt-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-start lg:gap-6">
           <div>
             <ul className="card !p-0">
               {items.map((item) => (

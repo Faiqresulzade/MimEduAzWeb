@@ -8,7 +8,7 @@ export function ToastViewport() {
     <div
       aria-live="polite"
       aria-atomic="true"
-      className="pointer-events-none fixed inset-x-0 bottom-5 z-50 flex flex-col items-center gap-2 px-4"
+      className="pointer-events-none fixed inset-x-0 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-50 lg:bottom-5 flex flex-col items-center gap-2 px-4"
     >
       {toasts.map((item) => (
         <div

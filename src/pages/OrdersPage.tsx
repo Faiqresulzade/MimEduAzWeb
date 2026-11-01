@@ -28,10 +28,10 @@ export default function OrdersPage() {
   }, []);
 
   return (
-    <div className="shell py-10 sm:py-14">
-      <h1 className="font-heading text-3xl font-bold text-brand-navy">Sifarişlərim</h1>
+    <div className="page">
+      <h1 className="hidden font-heading text-3xl font-bold text-brand-navy lg:block">Sifarişlərim</h1>
 
-      <div className="mt-8">
+      <div className="lg:mt-8">
         {loading ? (
           <Spinner />
         ) : error ? (

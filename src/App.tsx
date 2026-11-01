@@ -1,8 +1,9 @@
 import { lazy, Suspense } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { PublicLayout } from './layouts/PublicLayout';
 import { GuestRoute, ProtectedRoute } from './components/ProtectedRoute';
 import { Spinner } from './components/ui/Spinner';
+import { PanelIndex } from './components/workspace/PanelMenu';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const TrainingsPage = lazy(() => import('./pages/TrainingsPage'));
@@ -22,6 +23,7 @@ const AuthPage = lazy(() => import('./pages/AuthPage'));
 const CartPage = lazy(() => import('./pages/CartPage'));
 const OrdersPage = lazy(() => import('./pages/OrdersPage'));
 const QuizPage = lazy(() => import('./pages/QuizPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const CertificateVerifyPage = lazy(() => import('./pages/CertificateVerifyPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
@@ -70,7 +72,10 @@ export default function App() {
           <Route path="haqqimizda" element={<AboutPage />} />
           <Route path="blog/:id" element={<BlogPostPage />} />
           {/* Sertifikatdakı QR kodun hədəfi — publikdir. */}
+          <Route path="sertifikat-yoxla" element={<CertificateVerifyPage />} />
           <Route path="sertifikat-yoxla/:code" element={<CertificateVerifyPage />} />
+          {/* Mobil tətbiqin Profil tabı — qonaq üçün də açıqdır (giriş təklifi). */}
+          <Route path="profil" element={<ProfilePage />} />
 
           {/* Yalnız qonaq */}
           <Route element={<GuestRoute />}>
@@ -100,7 +105,7 @@ export default function App() {
         {/* Müəllim paneli */}
         <Route element={<ProtectedRoute role="Teacher" />}>
           <Route path="panel" element={<TeacherPanelPage />}>
-            <Route index element={<Navigate to="telimlerim" replace />} />
+            <Route index element={<PanelIndex kind="teacher" />} />
             <Route path="telimlerim" element={<MyTrainingsTab />} />
             <Route path="aldiqlarim" element={<PurchasedTab />} />
             <Route path="resurslarim" element={<MyResourcesTab />} />
@@ -116,7 +121,7 @@ export default function App() {
         {/* Admin paneli */}
         <Route element={<ProtectedRoute role="Admin" />}>
           <Route path="admin" element={<AdminPanelPage />}>
-            <Route index element={<Navigate to="icmal" replace />} />
+            <Route index element={<PanelIndex kind="admin" />} />
             <Route path="icmal" element={<DashboardTab />} />
             <Route path="moderasiya" element={<ModerationTab />} />
             <Route path="sinaqlar" element={<AdminExamsTab />} />

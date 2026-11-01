@@ -1,14 +1,22 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { examsApi } from '../api';
 import { apiErrorMessage } from '../hooks/useApiError';
 import { useAddToCart } from '../hooks/useAddToCart';
 import { ExamCard } from '../components/exams/ExamCard';
-import { Chip } from '../components/ui/Chip';
+import { CatalogFilters } from '../components/catalog/CatalogFilters';
 import { EmptyState } from '../components/ui/EmptyState';
 import { ErrorNote } from '../components/ui/ErrorNote';
 import { Spinner } from '../components/ui/Spinner';
-import { ALL_FILTER, ALL_GRADES, SUBJECTS } from '../lib/constants';
+import { ALL_FILTER, ALL_GRADES } from '../lib/constants';
+import {
+  filterSummary,
+  gradeOptions,
+  matchesPrice,
+  matchesSearch,
+  priceOptions,
+  subjectOptions,
+} from '../lib/filters';
 import type { Exam } from '../types';
 
 const PAGE_SIZE = 100;
@@ -19,6 +27,8 @@ export default function ExamsPage() {
 
   const subject = params.get('fenn') ?? ALL_FILTER;
   const grade = params.get('sinif') ?? ALL_GRADES;
+  const price = params.get('qiymet') ?? ALL_FILTER;
+  const search = params.get('q') ?? '';
 
   const [exams, setExams] = useState<Exam[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,21 +59,37 @@ export default function ExamsPage() {
       exams.filter(
         (item) =>
           (subject === ALL_FILTER || item.subject === subject) &&
-          (grade === ALL_GRADES || String(item.grade) === grade),
+          (grade === ALL_GRADES || String(item.grade) === grade) &&
+          matchesPrice(price, item.isPaid) &&
+          matchesSearch(search, item.name, item.authorName, item.subject),
       ),
-    [exams, subject, grade],
+    [exams, subject, grade, price, search],
   );
 
-  function updateFilter(key: string, value: string, defaultValue: string) {
-    const next = new URLSearchParams(params);
-    if (value === defaultValue) next.delete(key);
-    else next.set(key, value);
-    setParams(next, { replace: true });
-  }
+  const updateFilter = useCallback(
+    (key: string, value: string, defaultValue: string) => {
+      setParams(
+        (current) => {
+          const next = new URLSearchParams(current);
+          if (value === defaultValue) next.delete(key);
+          else next.set(key, value);
+          return next;
+        },
+        { replace: true },
+      );
+    },
+    [setParams],
+  );
+
+  const onSearch = useCallback((value: string) => updateFilter('q', value, ''), [updateFilter]);
+
+  const activeCount = [subject !== ALL_FILTER, grade !== ALL_GRADES, price !== ALL_FILTER].filter(
+    Boolean,
+  ).length;
 
   return (
-    <div className="shell py-10 sm:py-14">
-      <header className="max-w-2xl">
+    <div className="page">
+      <header className="hidden max-w-2xl lg:block">
         <h1 className="font-heading text-3xl font-bold text-brand-navy">Sınaqlar</h1>
         <p className="mt-3 text-sm leading-relaxed text-brand-muted">
           Müəllimlərin hazırladığı vaxt limitli sınaq imtahanları. Nəticə fənn üzrə
@@ -71,61 +97,49 @@ export default function ExamsPage() {
         </p>
       </header>
 
-      <div className="card mt-8">
-        <span className="font-heading text-[11px] font-bold uppercase tracking-[.08em] text-brand-faint">
-          Fənn
-        </span>
-        <div className="mt-2 flex flex-wrap gap-2">
-          <Chip
-            active={subject === ALL_FILTER}
-            onClick={() => updateFilter('fenn', ALL_FILTER, ALL_FILTER)}
-          >
-            {ALL_FILTER}
-          </Chip>
-          {SUBJECTS.map((item) => (
-            <Chip
-              key={item}
-              active={subject === item}
-              onClick={() => updateFilter('fenn', item, ALL_FILTER)}
-            >
-              {item}
-            </Chip>
-          ))}
-        </div>
-
-        {availableGrades.length > 0 && (
-          <>
-            <span className="mt-5 block font-heading text-[11px] font-bold uppercase tracking-[.08em] text-brand-faint">
-              Sinif
-            </span>
-            <div className="mt-2 flex flex-wrap gap-2">
-              <Chip
-                active={grade === ALL_GRADES}
-                onClick={() => updateFilter('sinif', ALL_GRADES, ALL_GRADES)}
-              >
-                {ALL_GRADES}
-              </Chip>
-              {availableGrades.map((item) => (
-                <Chip
-                  key={item}
-                  active={grade === String(item)}
-                  onClick={() => updateFilter('sinif', String(item), ALL_GRADES)}
-                >
-                  {item}
-                </Chip>
-              ))}
-            </div>
-          </>
-        )}
-
-        <p className="mt-4 border-t border-brand-borderLight pt-4 text-sm text-brand-slate">
-          {subject === ALL_FILTER ? 'Bütün fənlər' : subject} ·{' '}
-          {grade === ALL_GRADES ? 'bütün siniflər' : `${grade}-ci sinif`} ·{' '}
-          {filtered.length} sınaq
-        </p>
+      <div className="lg:mt-8">
+        <CatalogFilters
+          search={search}
+          onSearch={onSearch}
+          placeholder="Sınaq axtar…"
+          activeCount={activeCount}
+          summary={filterSummary(subject, grade, filtered.length, 'sınaq')}
+          onClear={() =>
+            setParams(search ? new URLSearchParams({ q: search }) : new URLSearchParams(), {
+              replace: true,
+            })
+          }
+          groups={[
+            {
+              key: 'subject',
+              title: 'Fənn',
+              options: subjectOptions,
+              value: subject,
+              onChange: (value) => updateFilter('fenn', value, ALL_FILTER),
+            },
+            ...(availableGrades.length > 0
+              ? [
+                  {
+                    key: 'grade',
+                    title: 'Sinif',
+                    options: gradeOptions(availableGrades),
+                    value: grade,
+                    onChange: (value: string) => updateFilter('sinif', value, ALL_GRADES),
+                  },
+                ]
+              : []),
+            {
+              key: 'price',
+              title: 'Qiymət',
+              options: priceOptions,
+              value: price,
+              onChange: (value) => updateFilter('qiymet', value, ALL_FILTER),
+            },
+          ]}
+        />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-4 lg:mt-6">
         {loading ? (
           <Spinner />
         ) : error ? (

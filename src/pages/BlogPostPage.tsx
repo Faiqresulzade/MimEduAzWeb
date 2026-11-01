@@ -31,7 +31,7 @@ export default function BlogPostPage() {
 
   if (error || !post) {
     return (
-      <div className="shell py-14">
+      <div className="shell py-10 lg:py-14">
         <ErrorNote message={error ?? 'Yazı tapılmadı.'} />
         <Link to="/" className="mt-4 inline-block text-sm font-semibold text-brand-blue">
           &larr; Ana səhifə
@@ -41,7 +41,7 @@ export default function BlogPostPage() {
   }
 
   return (
-    <article className="shell py-10 sm:py-14">
+    <article className="page">
       <Link to="/#blog" className="text-sm font-semibold text-brand-blue">
         &larr; Blog
       </Link>
@@ -52,7 +52,7 @@ export default function BlogPostPage() {
           <span className="text-xs text-brand-faint">{post.readTime}</span>
           <span className="text-xs text-brand-faint">{formatDate(post.createdAt)}</span>
         </div>
-        <h1 className="mt-4 font-heading text-3xl font-bold leading-tight text-brand-navy">
+        <h1 className="mt-4 font-heading text-[26px] font-bold leading-8 text-brand-navy lg:text-3xl lg:leading-tight">
           {post.title}
         </h1>
         <p className="mt-4 text-base leading-relaxed text-brand-slate">{post.excerpt}</p>

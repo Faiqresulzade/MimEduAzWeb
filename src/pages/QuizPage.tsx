@@ -91,7 +91,7 @@ export default function QuizPage() {
 
   if (error || !meta) {
     return (
-      <div className="shell py-14">
+      <div className="shell py-10 lg:py-14">
         <ErrorNote message={error ?? 'İmtahan tapılmadı.'} />
         <Link
           to={`/resurslar/${resourceId}`}
@@ -104,7 +104,7 @@ export default function QuizPage() {
   }
 
   return (
-    <div className="shell max-w-3xl py-10 sm:py-14">
+    <div className="page max-w-3xl">
       <Link
         to={`/resurslar/${resourceId}`}
         className="text-sm font-semibold text-brand-blue"

@@ -38,7 +38,7 @@ export default function AuthorPage() {
 
   if (error || !profile) {
     return (
-      <div className="shell py-14">
+      <div className="shell py-10 lg:py-14">
         <ErrorNote message={error ?? 'Müəllif tapılmadı.'} />
         <Link to="/resurslar" className="mt-4 inline-block text-sm font-semibold text-brand-blue">
           &larr; Resurs Bankı
@@ -48,7 +48,7 @@ export default function AuthorPage() {
   }
 
   return (
-    <div className="shell py-10 sm:py-14">
+    <div className="page">
       <Link to="/resurslar" className="text-sm font-semibold text-brand-blue">
         &larr; Resurs Bankı
       </Link>

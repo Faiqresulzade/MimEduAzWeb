@@ -114,10 +114,10 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="shell flex justify-center py-12 sm:py-16">
+    <div className="page flex justify-center lg:py-16">
       <div className="w-full max-w-md">
         <div className="card">
-          <h1 className="font-heading text-2xl font-bold text-brand-navy">
+          <h1 className="font-heading text-[22px] font-bold text-brand-navy lg:text-2xl">
             {mode === 'login' ? 'Hesaba daxil ol' : 'Yeni hesab aç'}
           </h1>
           <p className="mt-2 text-sm text-brand-muted">
