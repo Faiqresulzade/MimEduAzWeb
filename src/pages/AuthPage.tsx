@@ -7,7 +7,8 @@ import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { PasswordInput } from '../components/ui/PasswordInput';
 import { ErrorNote } from '../components/ui/ErrorNote';
-import type { AccountType } from '../types';
+import { GoogleSignInButton } from '../components/auth/GoogleSignInButton';
+import type { AccountType, User } from '../types';
 import { PASSWORD_MIN_LENGTH } from '../lib/constants';
 
 type Mode = 'login' | 'register';
@@ -25,9 +26,29 @@ const ACCOUNT_TYPES: { value: AccountType; title: string; hint: string }[] = [
   },
 ];
 
+/** Google ilə ilk dəfə gələn istifadəçidən bir dəfə soruşulur. */
+const GOOGLE_ACCOUNT_TYPES: { value: AccountType; title: string; hint: string }[] = [
+  {
+    value: 'Teacher',
+    title: 'Müəlliməm',
+    hint: 'KSQ cavab kartı yoxlama, təlimlər, resurs yükləmə və sertifikatlar.',
+  },
+  {
+    value: 'Student',
+    title: 'Şagirdəm',
+    hint: 'Təlimlərə yazıl, dərslərə bax, sertifikat al.',
+  },
+];
+
+interface GooglePending {
+  idToken: string;
+  fullName: string | null;
+  email: string | null;
+}
+
 export default function AuthPage() {
   const [params] = useSearchParams();
-  const { login, register } = useAuth();
+  const { login, register, loginWithGoogle } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -44,11 +65,49 @@ export default function AuthPage() {
   const [subject, setSubject] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [googlePending, setGooglePending] = useState<GooglePending | null>(null);
+  const [googleType, setGoogleType] = useState<AccountType>('Teacher');
 
   function switchAuth() {
     setMode((current) => (current === 'login' ? 'register' : 'login'));
     setConfirmPassword('');
     setError(null);
+  }
+
+  function finish(user: User) {
+    toast(`Xoş gəldiniz, ${user.fullName.split(' ')[0]}!`);
+    // Rol backend-in qaytardığı `roles` massivindən oxunur, e-poçtdan yox.
+    navigate(user.roles.includes('Admin') ? '/admin' : '/panel', { replace: true });
+  }
+
+  async function handleGoogle(idToken: string) {
+    setError(null);
+    setSubmitting(true);
+    try {
+      const result = await loginWithGoogle(idToken);
+      if (result.status === 'signedIn') finish(result.user);
+      else setGooglePending({ idToken, fullName: result.fullName, email: result.email });
+    } catch (err) {
+      setError(apiErrorMessage(err, 'Google ilə giriş alınmadı.'));
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function confirmGoogleType() {
+    if (!googlePending) return;
+    setError(null);
+    setSubmitting(true);
+    try {
+      const result = await loginWithGoogle(googlePending.idToken, googleType);
+      if (result.status === 'signedIn') finish(result.user);
+    } catch (err) {
+      // Google token-in ömrü 1 saatdır - bitibsə istifadəçi yenidən Google düyməsinə basır.
+      setGooglePending(null);
+      setError(apiErrorMessage(err, 'Google ilə giriş alınmadı. Yenidən cəhd edin.'));
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   async function handleSubmit(event: FormEvent) {
@@ -103,14 +162,72 @@ export default function AuthPage() {
               accountType,
             });
 
-      toast(`Xoş gəldiniz, ${user.fullName.split(' ')[0]}!`);
-      // Rol backend-in qaytardığı `roles` massivindən oxunur, e-poçtdan yox.
-      navigate(user.roles.includes('Admin') ? '/admin' : '/panel', { replace: true });
+      finish(user);
     } catch (err) {
       setError(apiErrorMessage(err, 'Giriş alınmadı.'));
     } finally {
       setSubmitting(false);
     }
+  }
+
+  if (googlePending) {
+    return (
+      <div className="page flex justify-center lg:py-16">
+        <div className="w-full max-w-md">
+          <div className="card">
+            <h1 className="font-heading text-[22px] font-bold text-brand-navy lg:text-2xl">
+              Hesab növünü seçin
+            </h1>
+            <p className="mt-2 text-sm text-brand-muted">
+              {googlePending.fullName ?? 'Xoş gəldiniz'}
+              {googlePending.email ? ` (${googlePending.email})` : ''} — bu, bir dəfə soruşulur.
+            </p>
+
+            <div className="mt-6 space-y-2">
+              {GOOGLE_ACCOUNT_TYPES.map((option) => {
+                const active = googleType === option.value;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setGoogleType(option.value)}
+                    aria-pressed={active}
+                    className={`flex w-full flex-col rounded-xl border px-4 py-3 text-left transition ${
+                      active
+                        ? 'border-brand-blue bg-brand-chipBg'
+                        : 'border-brand-border bg-white hover:bg-brand-hoverBg'
+                    }`}
+                  >
+                    <span className="font-heading text-sm font-semibold text-brand-navy">
+                      {option.title}
+                    </span>
+                    <span className="mt-0.5 text-[13px] text-brand-muted">{option.hint}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="mt-4">
+              <ErrorNote message={error} />
+            </div>
+
+            <div className="mt-4 space-y-2">
+              <Button fullWidth onClick={confirmGoogleType} disabled={submitting}>
+                {submitting ? 'Gözləyin…' : 'Davam et'}
+              </Button>
+              <Button
+                fullWidth
+                variant="ghost"
+                onClick={() => setGooglePending(null)}
+                disabled={submitting}
+              >
+                Geri
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -126,7 +243,11 @@ export default function AuthPage() {
               : 'Hesab növünü seçin — sonradan müəllif hesabına keçmək mümkündür.'}
           </p>
 
-          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <div className="mt-6">
+            <GoogleSignInButton onCredential={handleGoogle} />
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
             {mode === 'register' && (
               <>
                 <fieldset>

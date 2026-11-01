@@ -54,6 +54,19 @@ export interface RegisterRequest {
   accountType?: AccountType;
 }
 
+/** Google ilə giriş: yeni istifadəçidə hesab növü sonradan göndərilir. */
+export interface GoogleLoginRequest {
+  idToken: string;
+  accountType?: AccountType;
+}
+
+export interface GoogleLoginResponse {
+  requiresAccountType: boolean;
+  auth: AuthResponse | null;
+  email: string | null;
+  fullName: string | null;
+}
+
 export interface BecomeAuthorRequest {
   subject?: string;
 }

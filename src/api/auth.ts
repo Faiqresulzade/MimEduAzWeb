@@ -2,6 +2,8 @@ import { api } from './client';
 import type {
   AuthResponse,
   BecomeAuthorRequest,
+  GoogleLoginRequest,
+  GoogleLoginResponse,
   LoginRequest,
   RegisterRequest,
   User,
@@ -15,6 +17,17 @@ export const authApi = {
 
   async register(payload: RegisterRequest) {
     const { data } = await api.post<AuthResponse>('/auth/register', payload);
+    return data;
+  },
+
+  /** Google girişi qurulmayıbsa `clientId: null` — düymə göstərilmir. */
+  async googleConfig() {
+    const { data } = await api.get<{ clientId: string | null }>('/auth/google/config');
+    return data;
+  },
+
+  async google(payload: GoogleLoginRequest) {
+    const { data } = await api.post<GoogleLoginResponse>('/auth/google', payload);
     return data;
   },
 

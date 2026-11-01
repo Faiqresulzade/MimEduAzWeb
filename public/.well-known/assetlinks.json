@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "az.mimedu.app",
+      "sha256_cert_fingerprints": [
+        "E9:6C:A3:52:69:F2:19:B5:34:C1:32:8A:D8:70:75:69:DA:AC:CF:76:AA:17:D2:9A:FA:1D:30:68:CF:F9:18:E4"
+      ]
+    }
+  }
+]

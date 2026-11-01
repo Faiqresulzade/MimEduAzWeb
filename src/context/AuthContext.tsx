@@ -13,7 +13,18 @@ import {
   setSessionExpiredHandler,
   setTokens,
 } from '../api';
-import type { BecomeAuthorRequest, LoginRequest, RegisterRequest, User } from '../types';
+import type {
+  AccountType,
+  BecomeAuthorRequest,
+  LoginRequest,
+  RegisterRequest,
+  User,
+} from '../types';
+
+/** Google girişinin nəticəsi: ya daxil olundu, ya da yeni istifadəçidən hesab növü soruşulmalıdır. */
+export type GoogleLoginResult =
+  | { status: 'signedIn'; user: User }
+  | { status: 'needsAccountType'; email: string | null; fullName: string | null };
 
 export interface AuthContextValue {
   user: User | null;
@@ -27,6 +38,7 @@ export interface AuthContextValue {
   loading: boolean;
   login: (payload: LoginRequest) => Promise<User>;
   register: (payload: RegisterRequest) => Promise<User>;
+  loginWithGoogle: (idToken: string, accountType?: AccountType) => Promise<GoogleLoginResult>;
   becomeAuthor: (payload?: BecomeAuthorRequest) => Promise<User>;
   logout: () => Promise<void>;
 }
@@ -89,6 +101,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return auth.user;
   }, []);
 
+  const loginWithGoogle = useCallback(
+    async (idToken: string, accountType?: AccountType): Promise<GoogleLoginResult> => {
+      const result = await authApi.google({ idToken, accountType });
+      if (result.requiresAccountType || !result.auth) {
+        return { status: 'needsAccountType', email: result.email, fullName: result.fullName };
+      }
+      setTokens(result.auth.accessToken, result.auth.refreshToken);
+      setUser(result.auth.user);
+      return { status: 'signedIn', user: result.auth.user };
+    },
+    [],
+  );
+
   /**
    * Şagirddən müəllifə keçid. Yeni rol köhnə access token-də olmadığı üçün
    * dərhal refresh edilir (dəyişiklik sənədi §4) — əks halda `POST /resources`
@@ -131,10 +156,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loading,
       login,
       register,
+      loginWithGoogle,
       becomeAuthor,
       logout,
     };
-  }, [user, loading, login, register, becomeAuthor, logout]);
+  }, [user, loading, login, register, loginWithGoogle, becomeAuthor, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
