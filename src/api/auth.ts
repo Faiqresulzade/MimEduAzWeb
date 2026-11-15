@@ -40,6 +40,11 @@ export const authApi = {
     await api.post('/auth/logout', { refreshToken });
   },
 
+  /** Hesabı həmişəlik silir (şəxsi data silinir, giriş bağlanır). Geri qaytarılmır. */
+  async deleteAccount() {
+    await api.delete('/auth/me');
+  },
+
   /**
    * Şagird hesabını müəllif hesabına yüksəldir.
    * DİQQƏT: yeni rol mövcud access token-də olmur — çağırışdan sonra mütləq

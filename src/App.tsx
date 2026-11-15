@@ -18,6 +18,8 @@ const ResourceDetailPage = lazy(() => import('./pages/ResourceDetailPage'));
 const AuthorPage = lazy(() => import('./pages/AuthorPage'));
 const PromptsPage = lazy(() => import('./pages/PromptsPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
+const DeleteAccountPage = lazy(() => import('./pages/DeleteAccountPage'));
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
 const AuthPage = lazy(() => import('./pages/AuthPage'));
 const CartPage = lazy(() => import('./pages/CartPage'));
@@ -70,6 +72,8 @@ export default function App() {
           <Route path="muellif/:id" element={<AuthorPage />} />
           <Route path="promptlar" element={<PromptsPage />} />
           <Route path="haqqimizda" element={<AboutPage />} />
+          <Route path="mexfilik" element={<PrivacyPage />} />
+          <Route path="hesabi-sil" element={<DeleteAccountPage />} />
           <Route path="blog/:id" element={<BlogPostPage />} />
           {/* Sertifikatdakı QR kodun hədəfi — publikdir. */}
           <Route path="sertifikat-yoxla" element={<CertificateVerifyPage />} />

@@ -41,6 +41,8 @@ export interface AuthContextValue {
   loginWithGoogle: (idToken: string, accountType?: AccountType) => Promise<GoogleLoginResult>;
   becomeAuthor: (payload?: BecomeAuthorRequest) => Promise<User>;
   logout: () => Promise<void>;
+  /** Hesabı serverdə silir və sessiyanı bağlayır. Xəta olarsa atır (sessiya qalır). */
+  deleteAccount: () => Promise<void>;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -144,6 +146,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
+  const deleteAccount = useCallback(async () => {
+    await authApi.deleteAccount();
+    clearTokens();
+    setUser(null);
+  }, []);
+
   const value = useMemo<AuthContextValue>(() => {
     const isAdmin = user?.roles?.includes('Admin') ?? false;
     return {
@@ -159,8 +167,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loginWithGoogle,
       becomeAuthor,
       logout,
+      deleteAccount,
     };
-  }, [user, loading, login, register, loginWithGoogle, becomeAuthor, logout]);
+  }, [user, loading, login, register, loginWithGoogle, becomeAuthor, logout, deleteAccount]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

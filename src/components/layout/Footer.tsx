@@ -94,6 +94,16 @@ export function Footer() {
               </Link>
             </li>
             <li>
+              <Link to="/mexfilik" className="text-brand-slate hover:text-brand-blue">
+                Məxfilik siyasəti
+              </Link>
+            </li>
+            <li>
+              <Link to="/hesabi-sil" className="text-brand-slate hover:text-brand-blue">
+                Hesabın silinməsi
+              </Link>
+            </li>
+            <li>
               <button
                 type="button"
                 onClick={() => goToSection('blog')}
