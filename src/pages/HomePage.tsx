@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
-import { blogApi, resourcesApi, trainingsApi } from '../api';
-import { computePlatformStats } from '../api/pending';
+import { blogApi, statsApi } from '../api';
 import { Hero } from '../components/home/Hero';
 import { SectionCards } from '../components/home/SectionCards';
-import { Testimonials } from '../components/home/Testimonials';
 import { CertificateCheck } from '../components/home/CertificateCheck';
 import { FaqAccordion } from '../components/home/FaqAccordion';
 import { BlogSection } from '../components/home/BlogSection';
@@ -17,18 +15,12 @@ export default function HomePage() {
     let cancelled = false;
 
     async function load() {
-      const [resources, trainings, blog] = await Promise.allSettled([
-        resourcesApi.list({ pageSize: 1 }),
-        trainingsApi.list(),
-        blogApi.list(),
-      ]);
+      // Statistika yalnız bazadakı real rəqəmlərdir (heç bir "baza rəqəm" əlavə edilmir).
+      const [stats, blog] = await Promise.allSettled([statsApi.get(), blogApi.list()]);
 
       if (cancelled) return;
 
-      const resourceCount =
-        resources.status === 'fulfilled' ? resources.value.totalCount : 0;
-      const trainingList = trainings.status === 'fulfilled' ? trainings.value : [];
-      setStats(computePlatformStats(resourceCount, trainingList));
+      if (stats.status === 'fulfilled') setStats(stats.value);
 
       if (blog.status === 'fulfilled') setPosts(blog.value);
     }
@@ -43,7 +35,6 @@ export default function HomePage() {
     <>
       <Hero stats={stats} />
       <SectionCards />
-      <Testimonials />
       <CertificateCheck />
       <FaqAccordion />
       <BlogSection posts={posts} />

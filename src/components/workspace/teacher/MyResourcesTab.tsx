@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { resourcesApi } from '../../../api';
-import { resourceEarning } from '../../../api/pending';
+import { payoutsApi, resourcesApi } from '../../../api';
 import { apiErrorMessage } from '../../../hooks/useApiError';
 import { PriceBadge, StatusBadge } from '../../ui/Badge';
 import { EmptyState } from '../../ui/EmptyState';
@@ -13,11 +12,23 @@ import type { Resource } from '../../../types';
 
 export default function MyResourcesTab() {
   const [resources, setResources] = useState<Resource[]>([]);
+  const [netById, setNetById] = useState<Map<string, number>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
+    // Qazanc yalnız ödənilmiş satışlardan (backend) - endirmə sayı satış deyil.
+    payoutsApi
+      .mine()
+      .then((earnings) => {
+        if (cancelled) return;
+        setNetById(
+          new Map(earnings.items.filter((i) => i.itemType === 'Resource').map((i) => [i.itemId, i.net])),
+        );
+      })
+      .catch(() => undefined);
+
     resourcesApi
       .mine()
       .then((data) => !cancelled && setResources(data))
@@ -111,7 +122,7 @@ export default function MyResourcesTab() {
         ) : (
           <ul className="card mt-3 !p-0">
             {approved.map((item) => {
-              const earning = resourceEarning(item);
+              const earning = item.isPaid ? (netById.get(item.id) ?? 0) : null;
               return (
                 <li
                   key={item.id}

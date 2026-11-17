@@ -20,6 +20,13 @@ const PromptsPage = lazy(() => import('./pages/PromptsPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const DeleteAccountPage = lazy(() => import('./pages/DeleteAccountPage'));
+const TermsPage = lazy(() => import('./pages/legal/TermsPage'));
+const RefundPage = lazy(() => import('./pages/legal/RefundPage'));
+const DeliveryPage = lazy(() => import('./pages/legal/DeliveryPage'));
+const PaymentSecurityPage = lazy(() => import('./pages/legal/PaymentSecurityPage'));
+const ContactPage = lazy(() => import('./pages/legal/ContactPage'));
+const PaymentResultPage = lazy(() => import('./pages/PaymentResultPage'));
+const PayoutsTab = lazy(() => import('./components/workspace/admin/PayoutsTab'));
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
 const AuthPage = lazy(() => import('./pages/AuthPage'));
 const CartPage = lazy(() => import('./pages/CartPage'));
@@ -74,6 +81,11 @@ export default function App() {
           <Route path="haqqimizda" element={<AboutPage />} />
           <Route path="mexfilik" element={<PrivacyPage />} />
           <Route path="hesabi-sil" element={<DeleteAccountPage />} />
+          <Route path="istifade-sertleri" element={<TermsPage />} />
+          <Route path="geri-qaytarma" element={<RefundPage />} />
+          <Route path="xidmetin-teqdimi" element={<DeliveryPage />} />
+          <Route path="odenis-tehlukesizliyi" element={<PaymentSecurityPage />} />
+          <Route path="elaqe" element={<ContactPage />} />
           <Route path="blog/:id" element={<BlogPostPage />} />
           {/* Sertifikatdakı QR kodun hədəfi — publikdir. */}
           <Route path="sertifikat-yoxla" element={<CertificateVerifyPage />} />
@@ -90,6 +102,9 @@ export default function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="sebet" element={<CartPage />} />
             <Route path="sifarisler" element={<OrdersPage />} />
+            {/* Bank BACKREF-dən sonra: status backend-dən oxunur. */}
+            <Route path="odenis/ugurlu" element={<PaymentResultPage />} />
+            <Route path="odenis/ugursuz" element={<PaymentResultPage />} />
           </Route>
           <Route element={<ProtectedRoute message="İmtahan üçün hesaba daxil olun" />}>
             <Route path="imtahan/:resourceId" element={<QuizPage />} />
@@ -133,6 +148,7 @@ export default function App() {
             <Route path="istifadeciler" element={<UsersTab />} />
             <Route path="satis" element={<SalesTab />} />
             <Route path="sertifikatlar" element={<AdminCertificatesTab />} />
+            <Route path="odenisler" element={<PayoutsTab />} />
             <Route path="loglar" element={<LogsTab />} />
           </Route>
         </Route>

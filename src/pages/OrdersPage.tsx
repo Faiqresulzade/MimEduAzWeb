@@ -8,7 +8,16 @@ import { EmptyState } from '../components/ui/EmptyState';
 import { ErrorNote } from '../components/ui/ErrorNote';
 import { Spinner } from '../components/ui/Spinner';
 import { formatDateTime, formatPrice } from '../lib/format';
-import type { Order } from '../types';
+import { MERCHANT_NAME, SELLER_NAME, SELLER_VOEN } from '../data/legal';
+import type { Order, OrderStatus } from '../types';
+
+const STATUS: Record<OrderStatus, { label: string; tone: 'free' | 'paid' | 'danger' | 'neutral' | 'info' }> = {
+  Paid: { label: 'Ödənilib', tone: 'free' },
+  Pending: { label: 'Ödəniş gözlənilir', tone: 'paid' },
+  Failed: { label: 'Uğursuz', tone: 'danger' },
+  Cancelled: { label: 'Ləğv edilib', tone: 'neutral' },
+  Refunded: { label: 'Qaytarılıb', tone: 'info' },
+};
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -61,7 +70,7 @@ export default function OrdersPage() {
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <StatusBadge tone="free">Ödənildi</StatusBadge>
+                    <StatusBadge tone={STATUS[order.status].tone}>{STATUS[order.status].label}</StatusBadge>
                     <span className="font-heading text-xl font-bold text-brand-navy">
                       {formatPrice(order.totalAmount)}
                     </span>
@@ -83,6 +92,46 @@ export default function OrdersPage() {
                     </li>
                   ))}
                 </ul>
+
+                {order.status === 'Paid' && order.totalAmount > 0 && (
+                  <dl className="mt-3 grid grid-cols-[110px_minmax(0,1fr)] gap-y-1 rounded-xl bg-brand-chipBg p-3 text-[12px] text-brand-slate">
+                    {order.paidAt && (
+                      <>
+                        <dt className="text-brand-muted">Ödəniş tarixi</dt>
+                        <dd>{formatDateTime(order.paidAt)}</dd>
+                      </>
+                    )}
+                    {order.cardMask && (
+                      <>
+                        <dt className="text-brand-muted">Kart</dt>
+                        <dd>{order.cardMask}</dd>
+                      </>
+                    )}
+                    {order.rrn && (
+                      <>
+                        <dt className="text-brand-muted">RRN</dt>
+                        <dd>{order.rrn}</dd>
+                      </>
+                    )}
+                    {order.approvalCode && (
+                      <>
+                        <dt className="text-brand-muted">Təsdiq kodu</dt>
+                        <dd>{order.approvalCode}</dd>
+                      </>
+                    )}
+                    <dt className="text-brand-muted">Satıcı</dt>
+                    <dd>
+                      {SELLER_NAME} · VÖEN {SELLER_VOEN} · çıxarışda «{MERCHANT_NAME}»
+                    </dd>
+                  </dl>
+                )}
+
+                {order.status === 'Pending' && (
+                  <p className="mt-3 text-[13px] text-brand-muted">
+                    Bank təsdiqi gözlənilir. Kartdan pul çıxılıbsa, sifariş bir neçə dəqiqə ərzində
+                    avtomatik təsdiqlənəcək; ödənilməyən sifariş 24 saatdan sonra ləğv olunur.
+                  </p>
+                )}
               </article>
             ))}
           </div>

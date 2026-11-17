@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { CONTACT_EMAIL, PRIVACY_UPDATED_AT } from '../data/legal';
+import { SellerDetails } from '../components/legal/LegalLayout';
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -25,6 +26,11 @@ export default function PrivacyPage() {
           etdiyini və sizin hüquqlarınızı izah edir.
         </p>
 
+        <Section title="Məlumatların nəzarətçisi">
+          <p>Şəxsi məlumatlarınızın emalına görə məsul şəxs:</p>
+          <SellerDetails />
+        </Section>
+
         <Section title="1. Topladığımız məlumatlar">
           <ul className="list-disc space-y-2 pl-5">
             <li>
@@ -39,6 +45,18 @@ export default function PrivacyPage() {
               <strong>Platformadakı fəaliyyət:</strong> səbət, sifarişlər, təlimlərə yazılma və
               dərs irəliləyişi, sınaq və test nəticələri, verilən sertifikatlar, müəllimlərin
               yüklədiyi materiallar.
+            </li>
+            <li>
+              <strong>Ödəniş məlumatları:</strong> kart məlumatları (tam nömrə, bitmə tarixi,
+              CVV) AzeriCard/ABB tərəfindən onların təhlükəsiz səhifəsində emal olunur və bizə
+              ötürülmür. Biz yalnız sifariş nömrəsini, məbləği, ödənişin statusunu, bankın
+              qaytardığı maskalanmış kart nömrəsini, əməliyyat (RRN) və təsdiq kodunu, həmçinin
+              şərtlərlə razılaşdığınız anı saxlayırıq.
+            </li>
+            <li>
+              <strong>Müəllif ödənişləri:</strong> qazancını çıxaran müəllimdən bank hesabının
+              IBAN-ı, hesab sahibinin adı və FİN kodu toplanır — yalnız bank köçürməsi və vergi
+              uçotu üçün. Kart nömrəsi toplanmır.
             </li>
             <li>
               <strong>KSQ cavab kartı şəkilləri:</strong> müəllim kamera ilə cavab kartını
@@ -93,6 +111,11 @@ export default function PrivacyPage() {
               <strong>Google:</strong> Google ilə giriş seçildikdə identifikasiya üçün.
             </li>
             <li>
+              <strong>ABB və AzeriCard:</strong> kartla ödənişin emalı və 3-D Secure təsdiqi
+              üçün. Onlara sifariş nömrəsi, məbləğ və e-poçtunuz ötürülür; kart məlumatlarını siz
+              birbaşa onların səhifəsində daxil edirsiniz.
+            </li>
+            <li>
               <strong>Süni intellekt xidməti:</strong> KSQ cavab kartı şəkli cavabların oxunması
               üçün süni intellekt API-sinə (OpenRouter vasitəsilə) göndərilir; şəkil təlim məqsədilə istifadə edilmir və
               bizim tərəfimizdən saxlanılmır.
@@ -111,7 +134,13 @@ export default function PrivacyPage() {
           </p>
           <p>
             Məlumatlar hesabınız aktiv olduğu müddətdə saxlanılır. Hesab silindikdən sonra şəxsi
-            məlumatlar silinir (aşağıya bax).
+            məlumatlar silinir (aşağıya bax). Sifariş, ödəniş və müəllif ödənişi qeydləri
+            mühasibat və vergi qanunvericiliyinin tələb etdiyi müddət ərzində saxlanılır.
+          </p>
+          <p>
+            Saytda girişi davam etdirmək üçün brauzerin yerli yaddaşında (localStorage) giriş
+            token-i saxlanılır; reklam və izləmə cookie-ləri istifadə edilmir. Çıxış etdikdə token
+            silinir.
           </p>
         </Section>
 
@@ -133,7 +162,8 @@ export default function PrivacyPage() {
         <Section title="7. Uşaqlar">
           <p>
             Platforma müəllimlər və böyüklər üçün nəzərdə tutulub və 13 yaşdan kiçik uşaqlara
-            yönəlməyib. Belə istifadəçidən məlumat toplandığını bilsək, onu siləcəyik.
+            yönəlməyib. Belə istifadəçidən məlumat toplandığını bilsək, onu siləcəyik. Ödəniş
+            etmək üçün 18 yaş və ya valideynin (qanuni nümayəndənin) razılığı tələb olunur.
           </p>
         </Section>
 

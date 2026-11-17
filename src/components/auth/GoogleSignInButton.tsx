@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { authApi } from '../../api';
 
 /** Google Identity Services-in istifadə etdiyimiz hissəsi. */
@@ -68,13 +68,15 @@ function loadClientId(): Promise<string | null> {
 interface GoogleSignInButtonProps {
   /** Google-un verdiyi ID token ("credential"). */
   onCredential: (idToken: string) => void;
+  /** Düymənin altındakı qeyd (məs. şərtlərə razılıq mətni). */
+  note?: ReactNode;
 }
 
 /**
  * Google-un rəsmi "Google ilə davam et" düyməsi. Backend-də Client ID qurulmayıbsa
  * və ya skript yüklənmirsə (məs. bloklanıb) heç nə göstərilmir.
  */
-export function GoogleSignInButton({ onCredential }: GoogleSignInButtonProps) {
+export function GoogleSignInButton({ onCredential, note }: GoogleSignInButtonProps) {
   const container = useRef<HTMLDivElement>(null);
   const callback = useRef(onCredential);
   const [available, setAvailable] = useState(true);
@@ -133,6 +135,7 @@ export function GoogleSignInButton({ onCredential }: GoogleSignInButtonProps) {
   return (
     <div>
       <div ref={container} className="flex min-h-[44px] w-full justify-center" />
+      {note && <p className="mt-2 text-center text-[12px] leading-snug text-brand-muted">{note}</p>}
       <div className="my-5 flex items-center gap-3 text-xs font-medium uppercase tracking-[.08em] text-brand-faint">
         <span className="h-px flex-1 bg-brand-borderLight" />
         və ya

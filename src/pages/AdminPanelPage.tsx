@@ -8,6 +8,7 @@ const tabs: WorkspaceTab[] = [
   { to: '/admin/telimler', label: 'Təlimlər' },
   { to: '/admin/istifadeciler', label: 'İstifadəçilər' },
   { to: '/admin/satis', label: 'Satış və komissiya' },
+  { to: '/admin/odenisler', label: 'Müəllif ödənişləri' },
   { to: '/admin/sertifikatlar', label: 'Sertifikatlar' },
   { to: '/admin/loglar', label: 'Audit log' },
 ];

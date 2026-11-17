@@ -52,12 +52,16 @@ export interface RegisterRequest {
   subject?: string;
   /** Göndərilməsə backend `Student` yaradır. */
   accountType?: AccountType;
+  /** İstifadə şərtləri və məxfilik siyasəti ilə razılıq — məcburi. */
+  acceptTerms: boolean;
 }
 
 /** Google ilə giriş: yeni istifadəçidə hesab növü sonradan göndərilir. */
 export interface GoogleLoginRequest {
   idToken: string;
   accountType?: AccountType;
+  /** Yeni hesab yaradılanda məcburi (hesab növü ekranındakı checkbox). */
+  acceptTerms?: boolean;
 }
 
 export interface GoogleLoginResponse {
@@ -298,14 +302,105 @@ export interface OrderItem {
   price: number;
 }
 
+/** Pending — bank təsdiqi gözlənilir; giriş yalnız Paid-də açılır. */
+export type OrderStatus = 'Pending' | 'Paid' | 'Cancelled' | 'Refunded' | 'Failed';
+
 export interface Order {
   id: string;
   code: string;
   customerName: string | null;
   totalAmount: number;
-  status: string;
+  status: OrderStatus;
   createdAt: string;
   items: OrderItem[];
+  /** Qəbz: bankın qaytardığı məlumat (kart nömrəsi yalnız maskalı). */
+  paidAt: string | null;
+  cardMask: string | null;
+  rrn: string | null;
+  approvalCode: string | null;
+  paymentResult: string | null;
+}
+
+export interface CheckoutRequest {
+  /** İstifadə şərtləri, geri qaytarma və xidmətin təqdimi ilə razılıq — ödənişli səbətdə məcburi. */
+  acceptTerms: boolean;
+  /** 3-D Secure 2 üçün brauzer məlumatı (Base64 JSON). */
+  clientInfo?: string;
+}
+
+/** Bank səhifəsinə avtomatik POST ediləcək form. */
+export interface PaymentRedirect {
+  url: string;
+  fields: Record<string, string>;
+}
+
+export interface CheckoutResponse {
+  order: Order;
+  /** Pulsuz səbətdə null — sifariş dərhal tamamlanıb. */
+  payment: PaymentRedirect | null;
+}
+
+export interface PaymentConfig {
+  enabled: boolean;
+  currency: string;
+  termsVersion: string;
+}
+
+/* ---------- Müəllif qazancı və ödənişlər ---------- */
+
+export type PayoutStatus = 'Requested' | 'Paid' | 'Rejected';
+
+export interface Payout {
+  id: string;
+  amount: number;
+  ibanMasked: string;
+  accountHolder: string;
+  status: PayoutStatus;
+  adminNote: string | null;
+  createdAt: string;
+  processedAt: string | null;
+}
+
+export interface AdminPayout {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  amount: number;
+  iban: string;
+  accountHolder: string;
+  fin: string;
+  status: PayoutStatus;
+  adminNote: string | null;
+  createdAt: string;
+  processedAt: string | null;
+}
+
+export interface EarningItem {
+  itemType: ItemType;
+  itemId: string;
+  name: string;
+  unitsSold: number;
+  gross: number;
+  net: number;
+}
+
+export interface Earnings {
+  gross: number;
+  commission: number;
+  net: number;
+  paidOut: number;
+  pendingPayout: number;
+  available: number;
+  minimumPayout: number;
+  items: EarningItem[];
+  payouts: Payout[];
+}
+
+export interface CreatePayoutRequest {
+  iban: string;
+  accountHolder: string;
+  fin: string;
 }
 
 /* ---------- Quiz ---------- */
@@ -710,22 +805,7 @@ export interface BlogPostDetail extends BlogPost {
   body: string[];
 }
 
-/* ---------- Backend hazır olana qədər frontend-də hesablanan tiplər ---------- */
-
-export interface AuthorEarnings {
-  grossTotal: number;
-  commissionTotal: number;
-  netTotal: number;
-  commissionPercent: number;
-  perResource: {
-    resourceId: string;
-    name: string;
-    unitsSold: number;
-    price: number;
-    net: number;
-  }[];
-}
-
+/** Ana səhifə göstəriciləri — GET /api/v1/stats (real rəqəmlər). */
 export interface PlatformStats {
   resourceCount: number;
   trainingCount: number;

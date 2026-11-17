@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { apiErrorMessage } from '../hooks/useApiError';
@@ -67,6 +67,7 @@ export default function AuthPage() {
   const [submitting, setSubmitting] = useState(false);
   const [googlePending, setGooglePending] = useState<GooglePending | null>(null);
   const [googleType, setGoogleType] = useState<AccountType>('Teacher');
+  const [acceptTerms, setAcceptTerms] = useState(false);
 
   function switchAuth() {
     setMode((current) => (current === 'login' ? 'register' : 'login'));
@@ -99,7 +100,7 @@ export default function AuthPage() {
     setError(null);
     setSubmitting(true);
     try {
-      const result = await loginWithGoogle(googlePending.idToken, googleType);
+      const result = await loginWithGoogle(googlePending.idToken, googleType, true);
       if (result.status === 'signedIn') finish(result.user);
     } catch (err) {
       // Google token-in ömrü 1 saatdır - bitibsə istifadəçi yenidən Google düyməsinə basır.
@@ -160,6 +161,7 @@ export default function AuthPage() {
               subject:
                 accountType === 'Teacher' ? subject.trim() || undefined : undefined,
               accountType,
+              acceptTerms,
             });
 
       finish(user);
@@ -208,11 +210,15 @@ export default function AuthPage() {
             </div>
 
             <div className="mt-4">
+              <TermsCheckbox checked={acceptTerms} onChange={setAcceptTerms} />
+            </div>
+
+            <div className="mt-4">
               <ErrorNote message={error} />
             </div>
 
             <div className="mt-4 space-y-2">
-              <Button fullWidth onClick={confirmGoogleType} disabled={submitting}>
+              <Button fullWidth onClick={confirmGoogleType} disabled={submitting || !acceptTerms}>
                 {submitting ? 'Gözləyin…' : 'Davam et'}
               </Button>
               <Button
@@ -244,7 +250,22 @@ export default function AuthPage() {
           </p>
 
           <div className="mt-6">
-            <GoogleSignInButton onCredential={handleGoogle} />
+            <GoogleSignInButton
+              onCredential={handleGoogle}
+              note={
+                <>
+                  Google ilə davam etməklə{' '}
+                  <Link to="/istifade-sertleri" target="_blank" className="text-brand-blue underline">
+                    İstifadə şərtləri
+                  </Link>{' '}
+                  və{' '}
+                  <Link to="/mexfilik" target="_blank" className="text-brand-blue underline">
+                    Məxfilik siyasəti
+                  </Link>{' '}
+                  ilə razılaşırsınız.
+                </>
+              }
+            />
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -337,9 +358,11 @@ export default function AuthPage() {
               />
             )}
 
+            {mode === 'register' && <TermsCheckbox checked={acceptTerms} onChange={setAcceptTerms} />}
+
             <ErrorNote message={error} />
 
-            <Button type="submit" fullWidth disabled={submitting}>
+            <Button type="submit" fullWidth disabled={submitting || (mode === 'register' && !acceptTerms)}>
               {submitting
                 ? 'Gözləyin…'
                 : mode === 'login'
@@ -361,5 +384,29 @@ export default function AuthPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+/** Qeydiyyat üçün məcburi razılıq — backend də yoxlayır (acceptTerms). */
+function TermsCheckbox({ checked, onChange }: { checked: boolean; onChange: (value: boolean) => void }) {
+  return (
+    <label className="flex items-start gap-2.5 text-[13px] leading-snug text-brand-ink">
+      <input
+        type="checkbox"
+        className="mt-0.5 h-4 w-4 shrink-0 accent-brand-blue"
+        checked={checked}
+        onChange={(event) => onChange(event.target.checked)}
+      />
+      <span>
+        <Link to="/istifade-sertleri" target="_blank" className="text-brand-blue underline">
+          İstifadə şərtləri
+        </Link>{' '}
+        və{' '}
+        <Link to="/mexfilik" target="_blank" className="text-brand-blue underline">
+          Məxfilik siyasəti
+        </Link>{' '}
+        ilə tanış oldum və razıyam.
+      </span>
+    </label>
   );
 }

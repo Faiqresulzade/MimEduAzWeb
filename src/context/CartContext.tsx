@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import { ApiError, cartApi, ordersApi } from '../api';
-import type { Cart, ItemType, Order } from '../types';
+import type { Cart, CheckoutRequest, CheckoutResponse, ItemType } from '../types';
 import { AuthContext } from './AuthContext';
 
 export interface CartContextValue {
@@ -20,7 +20,8 @@ export interface CartContextValue {
   refresh: () => Promise<void>;
   addItem: (itemType: ItemType, itemId: string) => Promise<void>;
   removeItem: (cartItemId: string) => Promise<void>;
-  checkout: (customerName?: string) => Promise<Order>;
+  /** Pulsuz səbət dərhal tamamlanır; ödənişlidə bank formu qaytarılır, səbət ödənişdən sonra boşalır. */
+  checkout: (request: CheckoutRequest) => Promise<CheckoutResponse>;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -61,11 +62,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setCart(await cartApi.removeItem(cartItemId));
   }, []);
 
-  const checkout = useCallback(async (customerName?: string) => {
-    const order = await ordersApi.checkout(customerName);
-    // Backend checkout-dan sonra səbəti boşaldır.
-    setCart({ id: cart?.id ?? '', items: [], total: 0 });
-    return order;
+  const checkout = useCallback(async (request: CheckoutRequest) => {
+    const result = await ordersApi.checkout(request);
+    // Pulsuz sifariş dərhal tamamlanır və backend səbəti boşaldır. Ödənişli sifarişdə
+    // səbət bank təsdiqinə qədər qalır (istifadəçi ödənişi yarımçıq qoya bilər).
+    if (!result.payment) setCart({ id: cart?.id ?? '', items: [], total: 0 });
+    return result;
   }, [cart?.id]);
 
   const value = useMemo<CartContextValue>(

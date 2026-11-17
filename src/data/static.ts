@@ -37,30 +37,6 @@ export const homeSections: HomeSection[] = [
   },
 ];
 
-export interface Testimonial {
-  name: string;
-  role: string;
-  text: string;
-}
-
-export const testimonials: Testimonial[] = [
-  {
-    name: 'Nigar Əliyeva',
-    role: 'Riyaziyyat müəllimi · Bakı',
-    text: 'Hazırladığım iş vərəqlərini bura yükləyirəm. İlk ay ərzində materiallarım 400 dəfədən çox endirildi — həm gəlir, həm də geri bildirim gətirdi.',
-  },
-  {
-    name: 'Elvin Məmmədov',
-    role: 'Fizika müəllimi · Gəncə',
-    text: 'Canlı təlimdən sonra dərs planlarımı süni intellektlə hazırlamağa başladım. Sertifikatı məktəb rəhbərliyi koda görə yoxladı.',
-  },
-  {
-    name: 'Günel Həsənova',
-    role: 'İbtidai sinif müəllimi · Sumqayıt',
-    text: 'Resurs Bankından götürdüyüm testləri elə həmin gün sinifdə işlətdim. Sinif və fənn üzrə filtr axtarışı bir neçə saniyə çəkir.',
-  },
-];
-
 export interface FaqItem {
   question: string;
   answer: string;

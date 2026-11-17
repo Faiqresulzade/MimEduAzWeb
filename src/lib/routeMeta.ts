@@ -39,6 +39,13 @@ const routes: [pattern: string, meta: RouteMeta][] = [
   ['/giris', { title: 'Giriş', back: to('/profil') }],
   ['/sebet', { title: 'Səbət', back: to('/profil') }],
   ['/sifarisler', { title: 'Sifarişlərim', back: to('/profil') }],
+  ['/odenis/ugurlu', { title: 'Ödəniş', back: to('/sifarisler') }],
+  ['/odenis/ugursuz', { title: 'Ödəniş', back: to('/sebet') }],
+  ['/istifade-sertleri', { title: 'İstifadə şərtləri', back: to('/profil') }],
+  ['/geri-qaytarma', { title: 'Geri qaytarma', back: to('/profil') }],
+  ['/xidmetin-teqdimi', { title: 'Xidmətin təqdimi', back: to('/profil') }],
+  ['/odenis-tehlukesizliyi', { title: 'Ödəniş təhlükəsizliyi', back: to('/profil') }],
+  ['/elaqe', { title: 'Əlaqə', back: to('/profil') }],
 
   ['/panel', { title: 'Müəllim paneli', back: to('/profil') }],
   ['/panel/telimlerim', { title: 'Təlimlərim', back: to('/profil') }],
@@ -59,6 +66,7 @@ const routes: [pattern: string, meta: RouteMeta][] = [
   ['/admin/istifadeciler', { title: 'İstifadəçilər', back: to('/admin') }],
   ['/admin/satis', { title: 'Satış', back: to('/admin') }],
   ['/admin/sertifikatlar', { title: 'Sertifikatlar', back: to('/admin') }],
+  ['/admin/odenisler', { title: 'Müəllif ödənişləri', back: to('/admin') }],
   ['/admin/loglar', { title: 'Loglar', back: to('/admin') }],
 ];
 

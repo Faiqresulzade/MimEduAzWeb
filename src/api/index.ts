@@ -9,4 +9,5 @@ export { certificatesApi, certificateDocumentUrl } from './certificates';
 export { adminApi } from './admin';
 export { blogApi } from './blog';
 export { examsApi } from './exams';
+export { paymentsApi, payoutsApi, statsApi } from './payments';
 export { ksqApi } from './ksq';

@@ -38,7 +38,11 @@ export interface AuthContextValue {
   loading: boolean;
   login: (payload: LoginRequest) => Promise<User>;
   register: (payload: RegisterRequest) => Promise<User>;
-  loginWithGoogle: (idToken: string, accountType?: AccountType) => Promise<GoogleLoginResult>;
+  loginWithGoogle: (
+    idToken: string,
+    accountType?: AccountType,
+    acceptTerms?: boolean,
+  ) => Promise<GoogleLoginResult>;
   becomeAuthor: (payload?: BecomeAuthorRequest) => Promise<User>;
   logout: () => Promise<void>;
   /** Hesabı serverdə silir və sessiyanı bağlayır. Xəta olarsa atır (sessiya qalır). */
@@ -104,8 +108,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const loginWithGoogle = useCallback(
-    async (idToken: string, accountType?: AccountType): Promise<GoogleLoginResult> => {
-      const result = await authApi.google({ idToken, accountType });
+    async (idToken: string, accountType?: AccountType, acceptTerms?: boolean): Promise<GoogleLoginResult> => {
+      const result = await authApi.google({ idToken, accountType, acceptTerms });
       if (result.requiresAccountType || !result.auth) {
         return { status: 'needsAccountType', email: result.email, fullName: result.fullName };
       }
